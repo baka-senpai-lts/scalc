@@ -10,7 +10,7 @@ This is a fully functioning calculator, that happens to also be fully programmab
 ~ (\ 'x (~ x x)) (\ 'x (~ x x))
 ```
 
-But be aware that this WILL crash scalc (unless I added stack overflow protection and forgot to edit this line). Anyway, enjoy chaos.
+But be aware that this WILL **crash** scalc (unless I added stack overflow protection and forgot to edit this line). Anyway, enjoy chaos.
 
 ## Compilation
 
