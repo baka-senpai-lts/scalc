@@ -1,8 +1,8 @@
 #include "node.h"
 #include "util.h"
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 sc_Node *sc_construct_node(void *l, sc_NodeType l_type, sc_Operation op,
                            void *r, sc_NodeType r_type) {
@@ -40,12 +40,12 @@ sc_Node *sc_copy_node_tree(const sc_Node *node) {
     break;
   case NODE_VAR:
   case NODE_LITERAL:
-	result->l = sc_alloc_strcpy(node->l);
-	break;
+    result->l = sc_alloc_strcpy(node->l);
+    break;
   case NODE_NONE:
-	break;
+    break;
   default:
-	break;
+    break;
   }
 
   switch (node->r_type) {
@@ -62,12 +62,12 @@ sc_Node *sc_copy_node_tree(const sc_Node *node) {
     break;
   case NODE_VAR:
   case NODE_LITERAL:
-	result->r = sc_alloc_strcpy(node->r);
-	break;
+    result->r = sc_alloc_strcpy(node->r);
+    break;
   case NODE_NONE:
-	break;
+    break;
   default:
-	break;
+    break;
   }
 
   return result;

@@ -13,20 +13,20 @@ void sc_print_void_typed(void *p, sc_NodeType type) {
     printf("%d", *(int *)p);
     break;
   case NODE_FLOAT:
-	printf("%f", (double)*(float *)p);
+    printf("%f", (double)*(float *)p);
     break;
   case NODE_LITERAL:
-	printf("'%s", (char *)p);
+    printf("'%s", (char *)p);
     break;
   case NODE_VAR:
-	printf("v/%s", (char *)p);
+    printf("v/%s", (char *)p);
     break;
   case NODE_NONE:
-	fputs("None", stdout);
-	break;
+    fputs("None", stdout);
+    break;
   default:
-	// Probably nothing important anyway
-	break;
+    // Probably nothing important anyway
+    break;
   }
 }
 
@@ -45,16 +45,16 @@ void sc_print_operation(sc_Operation op) {
     fputs("/", stdout);
     break;
   case OP_LAMBDA:
-	fputs("\\", stdout);
-	break;
+    fputs("\\", stdout);
+    break;
   case OP_APPLY:
-	fputs("~", stdout);
-	break;
+    fputs("~", stdout);
+    break;
   case OP_NONE:
-	fputs(".", stdout);
-	break;
+    fputs(".", stdout);
+    break;
   default:
-	break;
+    break;
   }
 }
 

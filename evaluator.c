@@ -54,8 +54,8 @@ void sc_substitute_var(sc_Node *root, char *var, sc_Result sub) {
   }
 
   if (root->l_type == NODE_VAR && sc_strcmp(root->l, var)) {
-	free(root->l);
-	root->l_type = sc_result_type_to_node_type(sub.type);
+    free(root->l);
+    root->l_type = sc_result_type_to_node_type(sub.type);
 
     switch (sub.type) {
     case RESULT_INT:
@@ -79,7 +79,7 @@ void sc_substitute_var(sc_Node *root, char *var, sc_Result sub) {
 
   if (root->r_type == NODE_VAR && sc_strcmp(root->r, var)) {
     free(root->r);
-	root->r_type = sc_result_type_to_node_type(sub.type);
+    root->r_type = sc_result_type_to_node_type(sub.type);
 
     switch (sub.type) {
     case RESULT_INT:
@@ -192,7 +192,7 @@ sc_ResultType sc_deduce_result_type(const sc_Node *node) {
   sc_NodeType result_node_type = sc_max(node->l_type, node->r_type);
 
   if (node->op == OP_LAMBDA) {
-	return RESULT_LAMBDA;
+    return RESULT_LAMBDA;
   }
 
   if (node->op == OP_NONE) {
@@ -269,8 +269,8 @@ sc_Result sc_evaluate_none(sc_Node *node) {
     *(float *)result.result = *(float *)node->l;
     break;
   case RESULT_LAMBDA:
-	result.result = sc_copy_node_tree(node->l);
-	break;
+    result.result = sc_copy_node_tree(node->l);
+    break;
   case RESULT_UNDEFINED:
     break;
   }
@@ -436,12 +436,12 @@ sc_Result sc_evaluate_apply(sc_Node *node) {
 
   // Check if left is a node
   if (node->l_type != NODE_NODE) {
-	return undefined;
+    return undefined;
   }
 
   // Check if left already is a lambda
-  if (((sc_Node*)node->l)->op == OP_LAMBDA) {
-	lambda = node->l;
+  if (((sc_Node *)node->l)->op == OP_LAMBDA) {
+    lambda = node->l;
   } else {
     // Check if it's evaluated to lambda
     l_evaluated = sc_evaluate_node(node->l);
@@ -457,28 +457,28 @@ sc_Result sc_evaluate_apply(sc_Node *node) {
 
   // Check if right is a node
   if (node->r_type == NODE_NODE) {
-	sub = sc_evaluate_node(node->r);
+    sub = sc_evaluate_node(node->r);
   } else {
-	sub = sc_allocate_result(sc_node_type_to_result_type(node->r_type));
+    sub = sc_allocate_result(sc_node_type_to_result_type(node->r_type));
 
-	switch (sub.type) {
-	case RESULT_UNDEFINED:
-	  sc_free_result(sub);
-	  return undefined;
-	case RESULT_INT:
-	  *(int *)sub.result = *(int *)node->r;
-	  break;
-	case RESULT_FLOAT:
-	  *(float *)sub.result = *(float *)node->r;
-	  break;
-	case RESULT_LAMBDA:
-	  sub.result = sc_copy_node_tree(node->r);
+    switch (sub.type) {
+    case RESULT_UNDEFINED:
+      sc_free_result(sub);
+      return undefined;
+    case RESULT_INT:
+      *(int *)sub.result = *(int *)node->r;
+      break;
+    case RESULT_FLOAT:
+      *(float *)sub.result = *(float *)node->r;
+      break;
+    case RESULT_LAMBDA:
+      sub.result = sc_copy_node_tree(node->r);
 
-	  // Freeing after evaluation
-	  sc_free_node_tree_children(node->r);
-	  free(node->r);
-	  break;
-	}
+      // Freeing after evaluation
+      sc_free_node_tree_children(node->r);
+      free(node->r);
+      break;
+    }
   }
 
   // sub is now guaranteed to have value
@@ -496,12 +496,12 @@ sc_Result sc_evaluate_apply(sc_Node *node) {
   if (lambda->r_type == NODE_NODE) {
     result = sc_evaluate_node(lambda->r);
   } else {
-	result = sc_allocate_result(sc_node_type_to_result_type(lambda->r_type));
+    result = sc_allocate_result(sc_node_type_to_result_type(lambda->r_type));
 
     switch (result.type) {
     case RESULT_UNDEFINED:
-	  sc_free_result(sub);
-	  sc_free_result(l_evaluated);
+      sc_free_result(sub);
+      sc_free_result(l_evaluated);
       return undefined;
     case RESULT_INT:
       *(int *)result.result = *(int *)lambda->r;

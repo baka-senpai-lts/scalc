@@ -4,9 +4,9 @@
 #include <stdlib.h>
 
 #include "evaluator.h"
-#include "printer.h"
-#include "parser.h"
 #include "node.h"
+#include "parser.h"
+#include "printer.h"
 #include "repl.h"
 #include "util.h"
 
@@ -15,26 +15,26 @@ int main(void) {
   char *buffer = malloc(sizeof(char) * BUFSIZ);
 
   for (;;) {
-	// Because fuck you
-	sc_fill_seq_with_bytes(buffer, '\0', BUFSIZ);
+    // Because fuck you
+    sc_fill_seq_with_bytes(buffer, '\0', BUFSIZ);
 
-	int rc = sc_getline(" > ", buffer, BUFSIZ);
+    int rc = sc_getline(" > ", buffer, BUFSIZ);
 
-	if (rc == REPL_TOO_LONG) {
-	  puts("#> Why the fuck did you write this long expression?\n");
-	  continue;
-	}
+    if (rc == REPL_TOO_LONG) {
+      puts("#> Why the fuck did you write this long expression?\n");
+      continue;
+    }
 
-	if (rc == REPL_EMPTY) {
-	  puts("#> EOF\n");
-	  break;
-	}
+    if (rc == REPL_EMPTY) {
+      puts("#> EOF\n");
+      break;
+    }
 
-	if (sc_strlen(buffer) == 1) {
-	  break;
-	}
+    if (sc_strlen(buffer) == 1) {
+      break;
+    }
 
-	sc_Node *root = sc_str_to_node(buffer, NULL);
+    sc_Node *root = sc_str_to_node(buffer, NULL);
 
     fputs("~> ", stdout);
     sc_print_node(root);
@@ -49,18 +49,18 @@ int main(void) {
     case RESULT_FLOAT:
       printf("=> %f\n", (double)*(float *)result.result);
       break;
-	case RESULT_LAMBDA:
-	  printf("=> <lambda> ");
-	  sc_print_node(result.result);
-	  puts("");
-	  break;
+    case RESULT_LAMBDA:
+      printf("=> <lambda> ");
+      sc_print_node(result.result);
+      puts("");
+      break;
     default:
       printf("=> Undefined\n");
       break;
     }
-	puts("");
+    puts("");
 
-	sc_free_result(result);
+    sc_free_result(result);
     sc_free_node_tree_children(root);
     free(root);
   }

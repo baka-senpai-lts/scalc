@@ -1,8 +1,8 @@
 #include "parser.h"
 
 #include <assert.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "node.h"
 #include "printer.h"
@@ -16,9 +16,9 @@ char *sc_parse_literal(const char *str, long unsigned int *inc) {
   long unsigned int len = 0;
 
   for (; *end != '(' && *end != ')' && *end != '\0' && *end != '\n' &&
-		 *end != ' ';
-	   end++, len++)
-	;
+         *end != ' ';
+       end++, len++)
+    ;
 
   char *result = malloc(len + 1);
   char *ptr = result;
@@ -40,9 +40,9 @@ char *sc_parse_var(const char *str, long unsigned int *inc) {
   long unsigned int len = 0;
 
   for (; *end != '(' && *end != ')' && *end != '\0' && *end != '\n' &&
-		 *end != ' ';
-	   end++, len++)
-	;
+         *end != ' ';
+       end++, len++)
+    ;
 
   char *result = malloc(len + 1);
   char *ptr = result;
@@ -121,9 +121,9 @@ sc_TokenType sc_parse_token_type(const char *str) {
   // Trust me, it WORKS perfectly
 
   if (*str == '+' ||
-	  (*str == '-' && !(*(str + 1) >= '0' && *(str + 1) <= '9')) ||
-	  *str == '*' || *str == '/' || *str == '\\' || *str == '~') {
-	return TOK_OPERATION;
+      (*str == '-' && !(*(str + 1) >= '0' && *(str + 1) <= '9')) ||
+      *str == '*' || *str == '/' || *str == '\\' || *str == '~') {
+    return TOK_OPERATION;
   }
 
   if (*str == '\'') {
@@ -131,11 +131,11 @@ sc_TokenType sc_parse_token_type(const char *str) {
   }
 
   if (*str >= 'A' && *str <= 'z') {
-	return TOK_VAR;
+    return TOK_VAR;
   }
 
   if (!((*str >= '0' && *str <= '9') || (*str == '.' || *str == ','))) {
-	return TOK_VAR;
+    return TOK_VAR;
   }
 
   for (; *str >= '0' && *str <= '9'; str++)
@@ -180,7 +180,7 @@ static sc_Node *sc_append_operator_to_tree(sc_Node **root, sc_Operation op) {
 
     // I guess we support everything now?
     switch (op) {
-	case OP_APPLY:
+    case OP_APPLY:
     case OP_PLUS:
     case OP_MINUS:
       if (!(*root)->r) {
@@ -204,9 +204,9 @@ static sc_Node *sc_append_operator_to_tree(sc_Node **root, sc_Operation op) {
       }
       new_node = malloc(sizeof(sc_Node));
 
-	  if ((*root)->op == OP_DIVISION || (*root)->op == OP_MULTIPLICATION) {
-		goto append;
-	  }
+      if ((*root)->op == OP_DIVISION || (*root)->op == OP_MULTIPLICATION) {
+        goto append;
+      }
 
     on_right:
       // We have to rotate the tree a little for this shit
@@ -258,7 +258,7 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
   for (; len_max >= len && *str != '\0'; str++, len++) {
     if (*str == ' ' || *str == '\t' || *str == '\n') {
       continue;
-	}
+    }
 
     if (*str == '(') {
       if (!root->l) {
@@ -273,10 +273,10 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
       } else if (!appending) {
         appending = sc_append_operator_to_tree(&root, root->op);
         if (appending) {
-		  appending->r = sc_str_to_node(str + 1, &inner_inc);
+          appending->r = sc_str_to_node(str + 1, &inner_inc);
           appending->r_type = NODE_NODE;
         } else if (!root->r) {
-		  root->r = sc_str_to_node(str + 1, &inner_inc);
+          root->r = sc_str_to_node(str + 1, &inner_inc);
           root->r_type = NODE_NODE;
         }
       } else if (appending && appending->r && appending->op == OP_LAMBDA) {
@@ -300,7 +300,7 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
     sc_TokenType token = sc_parse_token_type(str);
 
     switch (token) {
-	case TOK_VAR: {
+    case TOK_VAR: {
       char *n = sc_parse_var(str, &inner_inc);
 
       if (!root->l && root->l_type == NODE_NONE) {
@@ -347,7 +347,7 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
         free(n);
       }
       break;
-	}
+    }
 
     case TOK_LITERAL: {
       char *n = sc_parse_literal(str, &inner_inc);
@@ -372,7 +372,7 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
             free(appending->r);
           }
 
-		  /* puts("Appending right"); */
+          /* puts("Appending right"); */
           appending->r = n;
           appending->r_type = NODE_LITERAL;
         } else {

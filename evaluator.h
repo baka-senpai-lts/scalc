@@ -35,8 +35,8 @@ sc_ResultType sc_deduce_result_type(const sc_Node *);
 sc_Result sc_allocate_result(sc_ResultType);
 int sc_free_result(sc_Result);
 
-sc_IntPair sc_end_node_to_int_pair(const sc_Node*);
-sc_FloatPair sc_end_node_to_float_pair(const sc_Node*);
+sc_IntPair sc_end_node_to_int_pair(const sc_Node *);
+sc_FloatPair sc_end_node_to_float_pair(const sc_Node *);
 
 void sc_substitute_var(sc_Node *, char *, sc_Result);
 
