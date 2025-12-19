@@ -32,11 +32,6 @@ typedef struct {
   sc_Operation op;
 } sc_Node;
 
-typedef struct {
-  sc_Node *root;
-  char *literal;
-} sc_Lambda;
-
 sc_Node *sc_construct_node(void *, sc_NodeType, sc_Operation, void *,
                            sc_NodeType);
 
