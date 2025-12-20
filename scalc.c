@@ -30,10 +30,6 @@ int main(void) {
       break;
     }
 
-    if (sc_strlen(buffer) == 1) {
-      break;
-    }
-
     sc_Node *root = sc_str_to_node(buffer, NULL);
 
     fputs("~> ", stdout);
