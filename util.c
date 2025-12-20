@@ -1,6 +1,5 @@
 #include "util.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 
 int sc_max(int a, int b) { return a > b ? a : b; }
@@ -51,10 +50,31 @@ char *sc_alloc_strcpy(const char *original) {
   return copy;
 }
 
-void sc_fill_seq_with_bytes(void *ptr, char byte, int size) {
+void sc_memmove_n(void *original, void *new, long unsigned int size) {
+  // First copy to secondary buffer, then copy from first to second
+  char *original_ch = (char *)original;
+  char *new_ch = (char *)new;
+
+  char *tmp = malloc(size);
+
+  for(long unsigned int i = 0; i < size; i++, tmp++, original_ch++) {
+    *tmp = *original_ch;
+    *original_ch = 0;
+  }
+
+  tmp -= size; // Going back to original position
+
+  for(long unsigned int i = 0; i < size; i++, tmp++, new_ch++) {
+      *new_ch = *tmp;
+  }
+
+  free(tmp - size);
+}
+
+void sc_fill_seq_with_bytes(void *ptr, char byte, long unsigned int size) {
   char *byte_ptr = (char *)ptr;
 
-  for (; byte_ptr - (char *)ptr < size; byte_ptr++) {
+  for (; (long unsigned int)(byte_ptr - (char *)ptr) < size; byte_ptr++) {
     *byte_ptr = byte;
   }
 }
