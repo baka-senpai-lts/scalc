@@ -1,11 +1,9 @@
 #include "evaluator.h"
 
 #include <assert.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "node.h"
-#include "printer.h"
 #include "util.h"
 
 static int sc_node_to_int(void *val, sc_NodeType type) {

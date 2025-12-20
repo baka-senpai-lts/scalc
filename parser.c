@@ -1,11 +1,9 @@
 #include "parser.h"
 
 #include <assert.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "node.h"
-#include "printer.h"
 #include "util.h"
 
 char *sc_parse_literal(const char *str, long unsigned int *inc) {

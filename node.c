@@ -1,7 +1,6 @@
 #include "node.h"
 #include "util.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 
 sc_Node *sc_construct_node(void *l, sc_NodeType l_type, sc_Operation op,
