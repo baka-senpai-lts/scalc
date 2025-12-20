@@ -4,10 +4,10 @@
 #define REPL_OK 0
 #define REPL_EMPTY 1
 #define REPL_TOO_LONG 2
-int sc_getline(const char *, char *, int);
 
-// A designated function for reading string from stdin
-// Uses the same return codes as `sc_getline`
-int sc_readline(char *, int);
+void sc_terminal_set_raw(void);
+void sc_terminal_set_cooked(void);
+
+int sc_getline(const char *, char *, int);
 
 #endif // REPL_H_
