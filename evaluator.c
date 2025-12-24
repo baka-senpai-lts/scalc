@@ -59,12 +59,32 @@ static float sc_node_to_float(void *val, sc_NodeType type, sc_Context **ctx) {
 
 void sc_substitute_var(sc_Node *root, char *var, sc_Result sub) {
   if (root->l_type == NODE_NODE) {
+    if (((sc_Node *)root->l)->op == OP_LAMBDA) {
+      sc_Node *lambda = root->l;
+
+      if (sc_strcmp(lambda->l, var)) {
+        goto skip_l_node;
+      }
+    }
+
     sc_substitute_var(root->l, var, sub);
   }
 
+skip_l_node:
+
   if (root->r_type == NODE_NODE) {
+    if (((sc_Node *)root->r)->op == OP_LAMBDA) {
+      sc_Node *lambda = root->r;
+
+      if (sc_strcmp(lambda->l, var)) {
+        goto skip_r_node;
+      }
+    }
+
     sc_substitute_var(root->r, var, sub);
   }
+
+skip_r_node:
 
   if (root->l_type == NODE_VAR && sc_strcmp(root->l, var)) {
     free(root->l);
@@ -588,7 +608,7 @@ sc_Result sc_evaluate_apply(sc_Node *node, sc_Context **ctx) {
   sc_Result result;
 
   // Already guaranteed to be a node
-  sc_substitute_var(lambda, lambda->l, sub);
+  sc_substitute_var(lambda->r, lambda->l, sub);
 
   if (lambda->r_type == NODE_NODE) {
     result = sc_evaluate_node(lambda->r, ctx);
