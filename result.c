@@ -32,6 +32,10 @@ int sc_free_result(sc_Result result) {
       sc_free_node_tree_children(result.result);
     }
 
+    if (result.type == RESULT_NODE) {
+      sc_free_node_tree_children(result.result);
+    }
+
     free(result.result);
     return 0;
   }
