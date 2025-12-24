@@ -120,7 +120,8 @@ sc_TokenType sc_parse_token_type(const char *str) {
 
   if (*str == '+' ||
       (*str == '-' && !(*(str + 1) >= '0' && *(str + 1) <= '9')) ||
-      *str == '*' || *str == '/' || *str == '\\' || *str == '~') {
+      *str == '*' || *str == '/' || *str == '\\' || *str == '~' ||
+      (*str == '=' && (*(str + 1) == '>'))) {
     return TOK_OPERATION;
   }
 
@@ -132,8 +133,12 @@ sc_TokenType sc_parse_token_type(const char *str) {
     return TOK_VAR;
   }
 
-  if (!((*str >= '0' && *str <= '9') || (*str == '.' || *str == ','))) {
+  if (!((*str >= '0' && *str <= '9') || (*str == '.' || *str == ',') || (*str == '-'))) {
     return TOK_VAR;
+  }
+
+  if (*str == '-') {
+    str++;
   }
 
   for (; *str >= '0' && *str <= '9'; str++)
@@ -164,7 +169,23 @@ sc_Operation sc_parse_operation(const char *str, long unsigned int *inc) {
   case '\\':
     return OP_LAMBDA;
   case '~':
+    if (*(str+1) == '>') {
+      if (inc != NULL) {
+        *inc = 2;
+      }
+
+      return OP_SET_LAZY;
+    }
     return OP_APPLY;
+  case '=':
+    if (*(str+1) == '>') {
+      if (inc != NULL) {
+        *inc = 2;
+      }
+
+      return OP_SET_EAGER;
+    }
+    return OP_NONE;
   }
   /* assert(0 && "Incorrect character passed to sc_parse_operation"); */
   return OP_NONE;

@@ -8,6 +8,10 @@ typedef enum {
   OP_MULTIPLICATION,
   OP_DIVISION,
 
+  // We are here for your convenience
+  OP_SET_EAGER,
+  OP_SET_LAZY,
+
   // We two make this shit Turing-complete
   OP_LAMBDA,
   OP_APPLY

@@ -53,6 +53,12 @@ void sc_print_operation(sc_Operation op) {
   case OP_NONE:
     fputs(".", stdout);
     break;
+  case OP_SET_EAGER:
+    fputs("=>", stdout);
+    break;
+  case OP_SET_LAZY:
+    fputs("~>", stdout);
+    break;
   default:
     break;
   }

@@ -8,11 +8,14 @@
 #include "parser.h"
 #include "printer.h"
 #include "repl.h"
+#include "result.h"
 #include "util.h"
+#include "context.h"
 
 int main(void) {
   // Too much for stack to hold consistently
   char *buffer = malloc(sizeof(char) * BUFSIZ);
+  sc_Context *ctx = NULL;
 
   for (;;) {
     // Because fuck you
@@ -36,7 +39,7 @@ int main(void) {
     sc_print_node(root);
     puts("");
 
-    sc_Result result = sc_evaluate_node_safe(root);
+    sc_Result result = sc_evaluate_node_safe(root, &ctx);
 
     switch (result.type) {
     case RESULT_INT:
@@ -61,6 +64,7 @@ int main(void) {
     free(root);
   }
 
+  sc_context_free(ctx);
   free(buffer);
   puts("If you can read this, WE DID NOT SEGFAULT");
 
