@@ -18,7 +18,7 @@ typedef struct {
 sc_ResultType sc_node_type_to_result_type(sc_NodeType);
 sc_NodeType sc_result_type_to_node_type(sc_ResultType);
 
-// Takes type with highest priority
+// PLEASE NEVER USE IT ON UNEVALUATED NODE
 sc_ResultType sc_deduce_result_type(const sc_Node *, sc_Context **);
 
 sc_IntPair sc_end_node_to_int_pair(const sc_Node *, sc_Context **);
