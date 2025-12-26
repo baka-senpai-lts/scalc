@@ -2,8 +2,8 @@
 
 #include <stdlib.h>
 
-#include "result.h"
 #include "node.h"
+#include "result.h"
 #include "util.h"
 
 sc_Result sc_context_get(sc_Context *ctx, const char *key) {
@@ -86,13 +86,13 @@ value_copy:
 }
 
 void sc_context_free(sc_Context *ctx) {
-	if (ctx == NULL) {
-		return;
-	}
+  if (ctx == NULL) {
+    return;
+  }
 
-	sc_context_free(ctx->next);
+  sc_context_free(ctx->next);
 
-	sc_free_result(ctx->value);
-	free(ctx->key);
-	free(ctx);
+  sc_free_result(ctx->value);
+  free(ctx->key);
+  free(ctx);
 }
