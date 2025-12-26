@@ -201,17 +201,24 @@ sc_ResultType sc_deduce_result_type(const sc_Node *node, sc_Context **ctx) {
     return RESULT_LAMBDA;
   }
 
+  if ((node->op == OP_SET_EAGER || node->op == OP_SET_LAZY) &&
+      node->l_type != NODE_LITERAL) {
+    return RESULT_UNDEFINED;
+  }
+
   if (node->op == OP_NONE) {
     if (l == RESULT_UNDEFINED && node->l_type != NODE_VAR &&
         node->l_type != NODE_LITERAL && node->l_type != NODE_NONE) {
       l = sc_deduce_result_type(node->l, ctx);
     } else if (node->l_type == NODE_VAR) {
       l_r = sc_context_get(*ctx, node->l);
+
       if (l_r.type == RESULT_NODE) {
         l = sc_deduce_result_type(l_r.result, ctx);
       } else {
         l = l_r.type;
       }
+
       sc_free_result(l_r);
     }
 
@@ -312,14 +319,42 @@ static void sc_evaluate_children(sc_Node *node, sc_Context **ctx) {
   }
 }
 
+static void sc_dereference_children(sc_Node *node, sc_Context **ctx) {
+  if (node->l_type == NODE_VAR) {
+    sc_Result tmp_result = sc_context_get(*ctx, node->l);
+
+    free(node->l);
+
+    node->l = tmp_result.result;
+    node->l_type = sc_result_type_to_node_type(tmp_result.type);
+
+    if (node->l_type == NODE_NODE) {
+      sc_dereference_children(node, ctx);
+    }
+  }
+
+  if (node->r_type == NODE_VAR) {
+    sc_Result tmp_result = sc_context_get(*ctx, node->r);
+
+    free(node->r);
+
+    node->r = tmp_result.result;
+    node->r_type = sc_result_type_to_node_type(tmp_result.type);
+
+    if (node->r_type == NODE_NODE) {
+      sc_dereference_children(node, ctx);
+    }
+  }
+}
+
 sc_Result sc_evaluate_none(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_NONE) &&
          "Non-none operation node passed to sc_evaluate_none");
   sc_Result result;
 
-  result = sc_allocate_result(sc_deduce_result_type(node, ctx));
-
   sc_evaluate_children(node, ctx);
+
+  result = sc_allocate_result(sc_deduce_result_type(node, ctx));
 
   switch (result.type) {
   case RESULT_INT:
@@ -345,6 +380,8 @@ sc_Result sc_evaluate_set_eager(sc_Node *node, sc_Context **ctx) {
   if (node->l_type != NODE_LITERAL) {
     return undefined;
   }
+
+  sc_dereference_children(node, ctx);
 
   sc_Result res = sc_allocate_result(sc_node_type_to_result_type(node->r_type));
 
@@ -378,27 +415,16 @@ sc_Result sc_evaluate_set_lazy(sc_Node *node, sc_Context **ctx) {
     return undefined;
   }
 
-  sc_Result res = sc_allocate_result(sc_node_type_to_result_type(node->r_type));
+  // Today I present to you the very special shit. Evaluation function that
+  // extends the tree by wrapping right node in OP_NONE
+  sc_Node *tmp = sc_construct_node(node->r, node->r_type, OP_NONE, NULL, NODE_NONE);
+  node->r = tmp;
+  node->r_type = NODE_NODE;
 
-  switch (node->r_type) {
-    case NODE_NODE:
-      res.type = RESULT_NODE;
-      res.result = sc_copy_node_tree(node->r);
-      break;
-    case NODE_INT:
-      *(int *)res.result = *(int *)node->r;
-      break;
-    case NODE_FLOAT:
-      *(float *)res.result = *(float *)node->r;
-      break;
-    case NODE_LITERAL:
-      // TODO: add RESULT_LITERAL
-      return undefined;
-    case NODE_VAR:
-      return sc_context_get(*ctx, node->r);
-    case NODE_NONE:
-      return undefined;
-  }
+  sc_Result res;
+
+  res.type = RESULT_NODE;
+  res.result = sc_copy_node_tree(node->r);
 
   sc_context_set(ctx, node->l, res);
   return res;
@@ -408,9 +434,9 @@ sc_Result sc_evaluate_plus(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_PLUS) &&
          "Non-plus operation node passed to sc_evaluate_plus");
 
-  sc_Result result = sc_allocate_result(sc_deduce_result_type(node, ctx));
-
   sc_evaluate_children(node, ctx);
+
+  sc_Result result = sc_allocate_result(sc_deduce_result_type(node, ctx));
 
   switch (result.type) {
   case RESULT_INT: {
@@ -437,9 +463,10 @@ sc_Result sc_evaluate_plus(sc_Node *node, sc_Context **ctx) {
 sc_Result sc_evaluate_minus(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_MINUS) &&
          "Non-plus operation node passed to sc_evaluate_minus");
-  sc_Result result = sc_allocate_result(sc_deduce_result_type(node, ctx));
 
   sc_evaluate_children(node, ctx);
+
+  sc_Result result = sc_allocate_result(sc_deduce_result_type(node, ctx));
 
   switch (result.type) {
   case RESULT_INT: {
@@ -476,9 +503,10 @@ sc_Result sc_evaluate_minus(sc_Node *node, sc_Context **ctx) {
 sc_Result sc_evaluate_multiplication(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_MULTIPLICATION) &&
          "Non-plus operation node passed to sc_evaluate_multiplication");
-  sc_Result result = sc_allocate_result(sc_deduce_result_type(node, ctx));
 
   sc_evaluate_children(node, ctx);
+
+  sc_Result result = sc_allocate_result(sc_deduce_result_type(node, ctx));
 
   switch (result.type) {
   case RESULT_INT: {
@@ -639,6 +667,108 @@ sc_Result sc_evaluate_apply(sc_Node *node, sc_Context **ctx) {
   return result;
 }
 
+sc_Result sc_evaluate_apply_lazy(sc_Node *node, sc_Context **ctx) {
+  assert((node->op == OP_APPLY_LAZY) &&
+         "Non-apply-lazy operation node passed to sc_evaluate_apply_lazy");
+
+  const sc_Result undefined = {.type = RESULT_UNDEFINED, .result = NULL};
+  sc_Result sub;
+  sc_Node *lambda;
+  sc_Result l_evaluated = {.type = RESULT_UNDEFINED, .result = NULL};
+
+  sc_dereference_children(node, ctx);
+
+  // Check if left is a node
+  if (node->l_type != NODE_NODE) {
+    return undefined;
+  }
+
+  // Check if left already is a lambda
+  if (((sc_Node *)node->l)->op == OP_LAMBDA) {
+    lambda = node->l;
+  } else {
+    // Check if it's evaluated to lambda
+    l_evaluated = sc_evaluate_node(node->l, ctx);
+    if (l_evaluated.type != RESULT_LAMBDA) {
+      sc_free_result(l_evaluated);
+      return undefined;
+    }
+
+    lambda = l_evaluated.result;
+  }
+
+  // lambda is now guaranteed to exist
+
+  // WE ARE DOING IT AGAIN FUCK YEA
+  sub.type = RESULT_NODE;
+
+  // Check if right is a node
+  if (node->r_type == NODE_NODE) {
+    // Here goes the only difference between normal application and lazy
+    /* sub = sc_evaluate_node(node->r, ctx); */
+    sub.type = RESULT_NODE;
+    sub.result = sc_copy_node_tree(node->r);
+  } else {
+    sub = sc_allocate_result(sc_node_type_to_result_type(node->r_type));
+
+    switch (sub.type) {
+    case RESULT_UNDEFINED:
+      sc_free_result(sub);
+      return undefined;
+    case RESULT_INT:
+      *(int *)sub.result = *(int *)node->r;
+      break;
+    case RESULT_FLOAT:
+      *(float *)sub.result = *(float *)node->r;
+      break;
+    case RESULT_NODE:
+    case RESULT_LAMBDA:
+      sub.result = sc_copy_node_tree(node->r);
+
+      // Freeing after evaluation
+      sc_free_node_tree_children(node->r);
+      free(node->r);
+      break;
+    }
+  }
+
+  // sub is now guaranteed to have value
+
+  // Substitution copies values, so we have to clean up
+  sc_Result result;
+
+  // Already guaranteed to be a node
+  sc_substitute_var(lambda->r, lambda->l, sub);
+
+  if (lambda->r_type == NODE_NODE) {
+    result = sc_evaluate_node(lambda->r, ctx);
+  } else {
+    result = sc_allocate_result(sc_node_type_to_result_type(lambda->r_type));
+
+    switch (result.type) {
+    case RESULT_UNDEFINED:
+      sc_free_result(sub);
+      sc_free_result(l_evaluated);
+      return undefined;
+    case RESULT_INT:
+      *(int *)result.result = *(int *)lambda->r;
+      break;
+    case RESULT_FLOAT:
+      *(float *)result.result = *(float *)lambda->r;
+      break;
+    case RESULT_NODE:
+    case RESULT_LAMBDA:
+      result.result = sc_copy_node_tree(lambda->r);
+      break;
+    }
+  }
+
+  sc_free_result(sub);
+  sc_free_result(l_evaluated);
+
+  return result;
+}
+
 sc_Result sc_evaluate_node(sc_Node *node, sc_Context **ctx) {
   sc_Result result;
   result.type = RESULT_UNDEFINED;
@@ -664,6 +794,9 @@ sc_Result sc_evaluate_node(sc_Node *node, sc_Context **ctx) {
     break;
   case OP_APPLY:
     result = sc_evaluate_apply(node, ctx);
+    break;
+  case OP_APPLY_LAZY:
+    result = sc_evaluate_apply_lazy(node, ctx);
     break;
   case OP_SET_EAGER:
     result = sc_evaluate_set_eager(node, ctx);

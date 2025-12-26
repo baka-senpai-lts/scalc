@@ -50,8 +50,11 @@ void sc_print_operation(sc_Operation op) {
   case OP_APPLY:
     fputs("~", stdout);
     break;
-  case OP_NONE:
+  case OP_APPLY_LAZY:
     fputs(".", stdout);
+    break;
+  case OP_NONE:
+    fputs("@", stdout);
     break;
   case OP_SET_EAGER:
     fputs("=>", stdout);

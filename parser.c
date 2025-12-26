@@ -121,7 +121,7 @@ sc_TokenType sc_parse_token_type(const char *str) {
   if (*str == '+' ||
       (*str == '-' && !(*(str + 1) >= '0' && *(str + 1) <= '9')) ||
       *str == '*' || *str == '/' || *str == '\\' || *str == '~' ||
-      (*str == '=' && (*(str + 1) == '>'))) {
+      (*str == '=' && (*(str + 1) == '>')) || *str == '.') {
     return TOK_OPERATION;
   }
 
@@ -177,6 +177,8 @@ sc_Operation sc_parse_operation(const char *str, long unsigned int *inc) {
       return OP_SET_LAZY;
     }
     return OP_APPLY;
+  case '.':
+    return OP_APPLY_LAZY;
   case '=':
     if (*(str+1) == '>') {
       if (inc != NULL) {
@@ -200,6 +202,7 @@ static sc_Node *sc_append_operator_to_tree(sc_Node **root, sc_Operation op) {
     // I guess we support everything now?
     switch (op) {
     case OP_APPLY:
+    case OP_APPLY_LAZY:
     case OP_PLUS:
     case OP_MINUS:
       if (!(*root)->r) {

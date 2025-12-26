@@ -14,7 +14,8 @@ typedef enum {
 
   // We two make this shit Turing-complete
   OP_LAMBDA,
-  OP_APPLY
+  OP_APPLY,
+  OP_APPLY_LAZY
 } sc_Operation;
 
 typedef enum {

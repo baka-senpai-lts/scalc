@@ -32,6 +32,7 @@ sc_Result sc_evaluate_set_eager(sc_Node *, sc_Context **);
 sc_Result sc_evaluate_set_lazy(sc_Node *, sc_Context **);
 
 sc_Result sc_evaluate_apply(sc_Node *, sc_Context **);
+sc_Result sc_evaluate_apply_lazy(sc_Node *, sc_Context **);
 
 // These functions mutate node tree, PLEASE DO NOT USE IT RAW
 sc_Result sc_evaluate_plus(sc_Node *, sc_Context **);
