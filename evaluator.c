@@ -292,6 +292,10 @@ static void sc_evaluate_children(sc_Node *node, sc_Context **ctx) {
     node->r_type = sc_result_type_to_node_type(tmp_result.type);
   }
 
+  if (node->l_type == NODE_NODE || node->r_type == NODE_NODE) {
+    sc_evaluate_children(node, ctx);
+  }
+
   if (node->l_type == NODE_VAR) {
     sc_Result tmp_result = sc_context_get(*ctx, node->l);
 
