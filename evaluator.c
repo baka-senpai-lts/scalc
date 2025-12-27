@@ -707,9 +707,6 @@ sc_Result sc_evaluate_apply_lazy(sc_Node *node, sc_Context **ctx) {
 
   // lambda is now guaranteed to exist
 
-  // WE ARE DOING IT AGAIN FUCK YEA
-  sub.type = RESULT_NODE;
-
   // Check if right is a node
   if (node->r_type == NODE_NODE) {
     // Here goes the only difference between normal application and lazy
