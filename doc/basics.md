@@ -24,7 +24,7 @@ Below is a list of commands that will help you install all the tools:
 ### Gentoo
 If you are running Gentoo you should know better, but you must already have these.
 ```
-# emerge --ask --noreplace git gcc make
+# emerge --ask --noreplace dev-vcs/git sys-devel/gcc dev-build/make
 ```
 
 ### Fedora/RHEL/CentOS
