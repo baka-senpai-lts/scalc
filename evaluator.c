@@ -421,9 +421,13 @@ sc_Result sc_evaluate_set_lazy(sc_Node *node, sc_Context **ctx) {
 
   // Today I present to you the very special shit. Evaluation function that
   // extends the tree by wrapping right node in OP_NONE
-  sc_Node *tmp = sc_construct_node(node->r, node->r_type, OP_NONE, NULL, NODE_NONE);
-  node->r = tmp;
-  node->r_type = NODE_NODE;
+
+  if (node->r_type != NODE_NODE) {
+    sc_Node *tmp =
+        sc_construct_node(node->r, node->r_type, OP_NONE, NULL, NODE_NONE);
+    node->r = tmp;
+    node->r_type = NODE_NODE;
+  }
 
   sc_Result res;
 
