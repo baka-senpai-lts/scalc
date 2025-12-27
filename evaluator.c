@@ -292,7 +292,8 @@ static void sc_evaluate_children(sc_Node *node, sc_Context **ctx) {
     node->r_type = sc_result_type_to_node_type(tmp_result.type);
   }
 
-  if (node->l_type == NODE_NODE || node->r_type == NODE_NODE) {
+  if ((node->l_type == NODE_NODE && ((sc_Node *)node->l)->op != OP_LAMBDA) ||
+      (node->r_type == NODE_NODE && ((sc_Node *)node->r)->op != OP_LAMBDA)) {
     sc_evaluate_children(node, ctx);
   }
 
