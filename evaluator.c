@@ -612,6 +612,10 @@ sc_Result sc_evaluate_apply(sc_Node *node, sc_Context **ctx) {
 
   // lambda is now guaranteed to exist
 
+  if (lambda->l_type != NODE_LITERAL) {
+    return undefined; // A simple check that suddenly prevents absolute death
+  }
+
   // Check if right is a node
   if (node->r_type == NODE_NODE) {
     sub = sc_evaluate_node(node->r, ctx);
@@ -707,6 +711,10 @@ sc_Result sc_evaluate_apply_lazy(sc_Node *node, sc_Context **ctx) {
   }
 
   // lambda is now guaranteed to exist
+
+  if (lambda->l_type != NODE_LITERAL) {
+    return undefined;
+  }
 
   // Check if right is a node
   if (node->r_type == NODE_NODE) {
