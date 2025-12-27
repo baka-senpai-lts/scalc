@@ -9,7 +9,7 @@ First, you have to compile scalc, in most cases you should already have all the 
 
 Also to clone the repository you would need `git`
 
-Below is a list of commands these will help you install all the tools:
+Below is a list of commands that will help you install all the tools:
 
 ### Ubuntu/Debian
 ```
@@ -132,7 +132,7 @@ You are now greeted with REPL. To begin, just start writing your expression. It 
 | `+`      | `2 + 2`                    | Summarizes two values                                                                     |
 | `-`      | `2 - 2`                    | Subtracts right value from left                                                           |
 | `*`      | `2 * 2`                    | Multiplies two value                                                                      |
-| `/`      | `2 / 2`                    | Divides left value by right, always returns float                                         |
+| `/`      | `2 / 2`                    | Divides left value by right, always returns a floating-point value                        |
 | `\`      | `\ 'a (a + 1)`             | Creates a lambda function with last expression as a result                                |
 | `~`      | `(\ 'a (a + 1)) ~ 2`       | Applies arguments to a lambda eagerly (will evaluate argument before substitution)        |
 | `.`      | `(\ 'a (a + 1)) . (1 + 1)` | Applies arguments to a lambda lazily (will not evaluate before substitution)              |
@@ -141,4 +141,4 @@ You are now greeted with REPL. To begin, just start writing your expression. It 
 
 ## Name or value
 
-Semantics are clear here, when you need a variable name to set variable or use it in lambda, append `'` to the beginning, this will be evaluated as a literal. Whenever you need to get a value that it holds, just type the name of the variable you need.
+Semantics are clear here, when you need a variable name to set variable or use it in lambda, prefix the name with `'`, this will be treated as a literal. Whenever you need to get a value that it holds, just type the name of the variable you need.
