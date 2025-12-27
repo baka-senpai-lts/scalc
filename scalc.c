@@ -53,6 +53,11 @@ int main(void) {
       sc_print_node(result.result);
       puts("");
       break;
+    case RESULT_NODE:
+      printf("=> <node> ");
+      sc_print_node(result.result);
+      puts("");
+      break;
     default:
       printf("=> Undefined\n");
       break;
