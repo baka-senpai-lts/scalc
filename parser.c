@@ -243,6 +243,8 @@ static sc_Node *sc_append_operator_to_tree(sc_Node **root, sc_Operation op) {
 
       return new_node;
       break;
+    case OP_SET_EAGER:
+    case OP_SET_LAZY:
     case OP_LAMBDA:
       if (!(*root)->r) {
         break;
@@ -301,10 +303,12 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
           root->r = sc_str_to_node(str + 1, &inner_inc);
           root->r_type = NODE_NODE;
         }
-      } else if (appending && appending->r && appending->op == OP_LAMBDA) {
+      } else if (appending && appending->r &&
+                 (appending->op == OP_LAMBDA || appending->op == OP_SET_EAGER ||
+                  appending->op == OP_SET_LAZY)) {
         // Insert into right on appending, steal right and put to left,
         // enables implicit currying like (\ 'a 'b 'c (+ a b c))
-        appending = sc_append_operator_to_tree(&appending, OP_LAMBDA);
+        appending = sc_append_operator_to_tree(&appending, appending->op);
         // If it's not guaranteed to be free, fuck me
         appending->r = sc_str_to_node(str + 1, &inner_inc);
         appending->r_type = NODE_NODE;
@@ -358,10 +362,12 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
           root->r = n;
           root->r_type = NODE_VAR;
         }
-      } else if (appending && appending->r && appending->op == OP_LAMBDA) {
+      } else if (appending && appending->r &&
+                 (appending->op == OP_LAMBDA || appending->op == OP_SET_EAGER ||
+                  appending->op == OP_SET_LAZY)) {
         // Insert into right on appending, steal right and put to left,
         // enables implicit currying like (\ 'a 'b 'c (+ a b c))
-        appending = sc_append_operator_to_tree(&appending, OP_LAMBDA);
+        appending = sc_append_operator_to_tree(&appending, appending->op);
         // If it's not guaranteed to be free, fuck me
         appending->r = n;
         appending->r_type = NODE_VAR;
@@ -408,10 +414,12 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
           root->r = n;
           root->r_type = NODE_LITERAL;
         }
-      } else if (appending && appending->r && appending->op == OP_LAMBDA) {
+      } else if (appending && appending->r &&
+                 (appending->op == OP_LAMBDA || appending->op == OP_SET_EAGER ||
+                  appending->op == OP_SET_LAZY)) {
         // Insert into right on appending, steal right and put to left,
         // enables implicit currying like (\ 'a 'b 'c (+ a b c))
-        appending = sc_append_operator_to_tree(&appending, OP_LAMBDA);
+        appending = sc_append_operator_to_tree(&appending, appending->op);
         // If it's not guaranteed to be free, fuck me
         appending->r = n;
         appending->r_type = NODE_LITERAL;
@@ -433,6 +441,13 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
         *(int *)root->r = n;
         root->r_type = NODE_INT;
       } else if (appending && !appending->r && appending->r_type == NODE_NONE) {
+        appending->r = malloc(sizeof(int));
+        *(int *)appending->r = n;
+        appending->r_type = NODE_INT;
+      } else if (appending && appending->r &&
+                 (appending->op == OP_LAMBDA || appending->op == OP_SET_EAGER ||
+                  appending->op == OP_SET_LAZY)) {
+        appending = sc_append_operator_to_tree(&appending, appending->op);
         appending->r = malloc(sizeof(int));
         *(int *)appending->r = n;
         appending->r_type = NODE_INT;
@@ -477,6 +492,13 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
         *(float *)root->r = n;
         root->r_type = NODE_FLOAT;
       } else if (appending && !appending->r && appending->r_type == NODE_NONE) {
+        appending->r = malloc(sizeof(float));
+        *(float *)appending->r = n;
+        appending->r_type = NODE_FLOAT;
+      } else if (appending && appending->r &&
+                 (appending->op == OP_LAMBDA || appending->op == OP_SET_EAGER ||
+                  appending->op == OP_SET_LAZY)) {
+        appending = sc_append_operator_to_tree(&appending, appending->op);
         appending->r = malloc(sizeof(float));
         *(float *)appending->r = n;
         appending->r_type = NODE_FLOAT;
