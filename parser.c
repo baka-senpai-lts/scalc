@@ -118,10 +118,12 @@ skip_f:
 sc_TokenType sc_parse_token_type(const char *str) {
   // Trust me, it WORKS perfectly
 
+  // TODO: clean up this menace
   if (*str == '+' ||
       (*str == '-' && !(*(str + 1) >= '0' && *(str + 1) <= '9')) ||
       *str == '*' || *str == '/' || *str == '\\' || *str == '~' ||
-      (*str == '=' && (*(str + 1) == '>')) || *str == '.') {
+      *str == '.' || *str == '=' || *str == '>' || *str == '<' ||
+      (*str == '!' && *(str + 1) == '=')) {
     return TOK_OPERATION;
   }
 
@@ -187,6 +189,35 @@ sc_Operation sc_parse_operation(const char *str, long unsigned int *inc) {
 
       return OP_SET_EAGER;
     }
+
+    return OP_EQUALS;
+  case '>':
+    if (*(str+1) == '=') {
+      if (inc != NULL) {
+        *inc = 2;
+      }
+
+      return OP_GREATER_EQUALS;
+    }
+    return OP_GREATER;
+  case '<':
+    if (*(str+1) == '=') {
+      if (inc != NULL) {
+        *inc = 2;
+      }
+
+      return OP_LESSER_EQUALS;
+    }
+    return OP_LESSER;
+  case '!':
+    if (*(str+1) == '=') {
+      if (inc != NULL) {
+        *inc = 2;
+      }
+
+      return OP_NOT_EQUALS;
+    }
+
     return OP_NONE;
   }
   /* assert(0 && "Incorrect character passed to sc_parse_operation"); */

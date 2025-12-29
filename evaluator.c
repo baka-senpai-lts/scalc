@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#include "common_nodes.h"
 #include "context.h"
 #include "node.h"
 #include "result.h"
@@ -783,6 +784,276 @@ sc_Result sc_evaluate_apply_lazy(sc_Node *node, sc_Context **ctx) {
   return result;
 }
 
+sc_Result sc_evaluate_equals(sc_Node *node, sc_Context **ctx) {
+  assert((node->op == OP_EQUALS) &&
+         "Non-equals operation node passed to sc_evaluate_equals");
+
+  const sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
+
+  sc_evaluate_children(node, ctx);
+
+  if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
+    return undefined;
+  }
+
+  if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
+    return undefined;
+  }
+
+  // So we now know for SURE that they are int or float
+  sc_ResultType type = sc_deduce_result_type(node, ctx);
+
+  // "A label followed by declaration is a C23 extension" or something
+  sc_IntPair ints;
+  sc_FloatPair floats;
+
+  switch (type) {
+  case RESULT_INT:
+    ints = sc_end_node_to_int_pair(node, ctx);
+
+    if (ints.l == ints.r) {
+      return sc_construct_true();
+    } else {
+      return sc_construct_false();
+    }
+  case RESULT_FLOAT:
+    floats = sc_end_node_to_float_pair(node, ctx);
+
+    if (floats.l == floats.r) {
+      return sc_construct_true();
+    } else {
+      return sc_construct_false();
+    }
+  default:
+    return undefined;
+  }
+}
+
+sc_Result sc_evaluate_greater(sc_Node *node, sc_Context **ctx) {
+  assert((node->op == OP_GREATER) &&
+         "Non-greater operation node passed to sc_evaluate_greater");
+
+  const sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
+
+  sc_evaluate_children(node, ctx);
+
+  if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
+    return undefined;
+  }
+
+  if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
+    return undefined;
+  }
+
+  // So we now know for SURE that they are int or float
+  sc_ResultType type = sc_deduce_result_type(node, ctx);
+
+  // "A label followed by declaration is a C23 extension" or something
+  sc_IntPair ints;
+  sc_FloatPair floats;
+
+  switch (type) {
+  case RESULT_INT:
+    ints = sc_end_node_to_int_pair(node, ctx);
+
+    if (ints.l > ints.r) {
+      return sc_construct_true();
+    } else {
+      return sc_construct_false();
+    }
+  case RESULT_FLOAT:
+    floats = sc_end_node_to_float_pair(node, ctx);
+
+    if (floats.l > floats.r) {
+      return sc_construct_true();
+    } else {
+      return sc_construct_false();
+    }
+  default:
+    return undefined;
+  }
+}
+
+sc_Result sc_evaluate_lesser(sc_Node *node, sc_Context **ctx) {
+  assert((node->op == OP_LESSER) &&
+         "Non-lesser operation node passed to sc_evaluate_lesser");
+
+  const sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
+
+  sc_evaluate_children(node, ctx);
+
+  if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
+    return undefined;
+  }
+
+  if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
+    return undefined;
+  }
+
+  // So we now know for SURE that they are int or float
+  sc_ResultType type = sc_deduce_result_type(node, ctx);
+
+  // "A label followed by declaration is a C23 extension" or something
+  sc_IntPair ints;
+  sc_FloatPair floats;
+
+  switch (type) {
+  case RESULT_INT:
+    ints = sc_end_node_to_int_pair(node, ctx);
+
+    if (ints.l < ints.r) {
+      return sc_construct_true();
+    } else {
+      return sc_construct_false();
+    }
+  case RESULT_FLOAT:
+    floats = sc_end_node_to_float_pair(node, ctx);
+
+    if (floats.l < floats.r) {
+      return sc_construct_true();
+    } else {
+      return sc_construct_false();
+    }
+  default:
+    return undefined;
+  }
+}
+
+sc_Result sc_evaluate_not_equals(sc_Node *node, sc_Context **ctx) {
+  assert((node->op == OP_NOT_EQUALS) &&
+         "Non-not-equals operation node passed to sc_evaluate_not_equals");
+
+  const sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
+
+  sc_evaluate_children(node, ctx);
+
+  if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
+    return undefined;
+  }
+
+  if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
+    return undefined;
+  }
+
+  // So we now know for SURE that they are int or float
+  sc_ResultType type = sc_deduce_result_type(node, ctx);
+
+  // "A label followed by declaration is a C23 extension" or something
+  sc_IntPair ints;
+  sc_FloatPair floats;
+
+  switch (type) {
+  case RESULT_INT:
+    ints = sc_end_node_to_int_pair(node, ctx);
+
+    if (ints.l != ints.r) {
+      return sc_construct_true();
+    } else {
+      return sc_construct_false();
+    }
+  case RESULT_FLOAT:
+    floats = sc_end_node_to_float_pair(node, ctx);
+
+    if (floats.l != floats.r) {
+      return sc_construct_true();
+    } else {
+      return sc_construct_false();
+    }
+  default:
+    return undefined;
+  }
+}
+
+sc_Result sc_evaluate_greater_equals(sc_Node *node, sc_Context **ctx) {
+  assert((node->op == OP_GREATER_EQUALS) &&
+         "Non-greater-equals operation node passed to sc_evaluate_greater_equals");
+
+  const sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
+
+  sc_evaluate_children(node, ctx);
+
+  if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
+    return undefined;
+  }
+
+  if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
+    return undefined;
+  }
+
+  // So we now know for SURE that they are int or float
+  sc_ResultType type = sc_deduce_result_type(node, ctx);
+
+  // "A label followed by declaration is a C23 extension" or something
+  sc_IntPair ints;
+  sc_FloatPair floats;
+
+  switch (type) {
+  case RESULT_INT:
+    ints = sc_end_node_to_int_pair(node, ctx);
+
+    if (ints.l >= ints.r) {
+      return sc_construct_true();
+    } else {
+      return sc_construct_false();
+    }
+  case RESULT_FLOAT:
+    floats = sc_end_node_to_float_pair(node, ctx);
+
+    if (floats.l >= floats.r) {
+      return sc_construct_true();
+    } else {
+      return sc_construct_false();
+    }
+  default:
+    return undefined;
+  }
+}
+
+sc_Result sc_evaluate_lesser_equals(sc_Node *node, sc_Context **ctx) {
+  assert((node->op == OP_LESSER_EQUALS) &&
+         "Non-lesser-equals operation node passed to sc_evaluate_lesser_equals");
+
+  const sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
+
+  sc_evaluate_children(node, ctx);
+
+  if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
+    return undefined;
+  }
+
+  if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
+    return undefined;
+  }
+
+  // So we now know for SURE that they are int or float
+  sc_ResultType type = sc_deduce_result_type(node, ctx);
+
+  // "A label followed by declaration is a C23 extension" or something
+  sc_IntPair ints;
+  sc_FloatPair floats;
+
+  switch (type) {
+  case RESULT_INT:
+    ints = sc_end_node_to_int_pair(node, ctx);
+
+    if (ints.l <= ints.r) {
+      return sc_construct_true();
+    } else {
+      return sc_construct_false();
+    }
+  case RESULT_FLOAT:
+    floats = sc_end_node_to_float_pair(node, ctx);
+
+    if (floats.l <= floats.r) {
+      return sc_construct_true();
+    } else {
+      return sc_construct_false();
+    }
+  default:
+    return undefined;
+  }
+}
+
 sc_Result sc_evaluate_node(sc_Node *node, sc_Context **ctx) {
   sc_Result result;
   result.type = RESULT_UNDEFINED;
@@ -817,6 +1088,24 @@ sc_Result sc_evaluate_node(sc_Node *node, sc_Context **ctx) {
     break;
   case OP_SET_LAZY:
     result = sc_evaluate_set_lazy(node, ctx);
+    break;
+  case OP_EQUALS:
+    result = sc_evaluate_equals(node, ctx);
+    break;
+  case OP_GREATER:
+    result = sc_evaluate_greater(node, ctx);
+    break;
+  case OP_LESSER:
+    result = sc_evaluate_lesser(node, ctx);
+    break;
+  case OP_NOT_EQUALS:
+    result = sc_evaluate_not_equals(node, ctx);
+    break;
+  case OP_GREATER_EQUALS:
+    result = sc_evaluate_greater_equals(node, ctx);
+    break;
+  case OP_LESSER_EQUALS:
+    result = sc_evaluate_lesser_equals(node, ctx);
     break;
   }
 

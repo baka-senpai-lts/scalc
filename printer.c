@@ -62,6 +62,24 @@ void sc_print_operation(sc_Operation op) {
   case OP_SET_LAZY:
     fputs("~>", stdout);
     break;
+  case OP_EQUALS:
+    fputs("=", stdout);
+    break;
+  case OP_GREATER:
+    fputs(">", stdout);
+    break;
+  case OP_LESSER:
+    fputs("<", stdout);
+    break;
+  case OP_NOT_EQUALS:
+    fputs("!=", stdout);
+    break;
+  case OP_GREATER_EQUALS:
+    fputs(">=", stdout);
+    break;
+  case OP_LESSER_EQUALS:
+    fputs("<=", stdout);
+    break;
   default:
     break;
   }

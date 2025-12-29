@@ -15,7 +15,15 @@ typedef enum {
   // We two make this shit Turing-complete
   OP_LAMBDA,
   OP_APPLY,
-  OP_APPLY_LAZY
+  OP_APPLY_LAZY,
+
+  // Here go comparisons
+  OP_EQUALS,
+  OP_GREATER,
+  OP_LESSER,
+  OP_GREATER_EQUALS,
+  OP_LESSER_EQUALS,
+  OP_NOT_EQUALS
 } sc_Operation;
 
 typedef enum {

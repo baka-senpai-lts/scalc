@@ -40,6 +40,13 @@ sc_Result sc_evaluate_minus(sc_Node *, sc_Context **);
 sc_Result sc_evaluate_multiplication(sc_Node *, sc_Context **);
 sc_Result sc_evaluate_division(sc_Node *, sc_Context **);
 
+sc_Result sc_evaluate_equals(sc_Node *, sc_Context **);
+sc_Result sc_evaluate_greater(sc_Node *, sc_Context **);
+sc_Result sc_evaluate_lesser(sc_Node *, sc_Context **);
+sc_Result sc_evaluate_greater_equals(sc_Node *, sc_Context **);
+sc_Result sc_evaluate_lesser_equals(sc_Node *, sc_Context **);
+sc_Result sc_evaluate_not_equals(sc_Node *, sc_Context **);
+
 sc_Result sc_evaluate_node(sc_Node *, sc_Context **);
 
 sc_Result sc_evaluate_lambda(sc_Node *);
