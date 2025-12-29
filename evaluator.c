@@ -186,7 +186,7 @@ sc_NodeType sc_result_type_to_node_type(sc_ResultType r) {
   return NODE_NODE;
 }
 
-sc_ResultType sc_deduce_result_type(const sc_Node *node, sc_Context **ctx) {
+sc_ResultType sc_synthesize_result_type(const sc_Node *node, sc_Context **ctx) {
   sc_ResultType l = sc_node_type_to_result_type(node->l_type);
   sc_ResultType r = sc_node_type_to_result_type(node->r_type);
 
@@ -207,12 +207,12 @@ sc_ResultType sc_deduce_result_type(const sc_Node *node, sc_Context **ctx) {
   if (node->op == OP_NONE) {
     if (l == RESULT_UNDEFINED && node->l_type != NODE_VAR &&
         node->l_type != NODE_LITERAL && node->l_type != NODE_NONE) {
-      l = sc_deduce_result_type(node->l, ctx);
+      l = sc_synthesize_result_type(node->l, ctx);
     } else if (node->l_type == NODE_VAR) {
       l_r = sc_context_get(*ctx, node->l);
 
       if (l_r.type == RESULT_NODE) {
-        l = sc_deduce_result_type(l_r.result, ctx);
+        l = sc_synthesize_result_type(l_r.result, ctx);
       } else {
         l = l_r.type;
       }
@@ -226,7 +226,7 @@ sc_ResultType sc_deduce_result_type(const sc_Node *node, sc_Context **ctx) {
   if (node->l_type == NODE_VAR && l == RESULT_UNDEFINED) {
     l_r = sc_context_get(*ctx, node->l);
     if (l_r.type == RESULT_NODE) {
-      l = sc_deduce_result_type(l_r.result, ctx);
+      l = sc_synthesize_result_type(l_r.result, ctx);
     } else {
       l = l_r.type;
     }
@@ -236,7 +236,7 @@ sc_ResultType sc_deduce_result_type(const sc_Node *node, sc_Context **ctx) {
   if (node->r_type == NODE_VAR && r == RESULT_UNDEFINED) {
     r_r = sc_context_get(*ctx, node->r);
     if (r_r.type == RESULT_NODE) {
-      r = sc_deduce_result_type(r_r.result, ctx);
+      r = sc_synthesize_result_type(r_r.result, ctx);
     } else {
       r = r_r.type;
     }
@@ -246,12 +246,12 @@ sc_ResultType sc_deduce_result_type(const sc_Node *node, sc_Context **ctx) {
   if (result_node_type == NODE_NODE) {
     if (l == RESULT_UNDEFINED && node->l_type != NODE_VAR &&
         node->l_type != NODE_LITERAL && node->l_type != NODE_NONE) {
-      l = sc_deduce_result_type(node->l, ctx);
+      l = sc_synthesize_result_type(node->l, ctx);
     }
 
     if (r == RESULT_UNDEFINED && node->r_type != NODE_VAR &&
         node->r_type != NODE_LITERAL && node->r_type != NODE_NONE) {
-      r = sc_deduce_result_type(node->r, ctx);
+      r = sc_synthesize_result_type(node->r, ctx);
     }
 
     if (node->op == OP_DIVISION) {
@@ -357,7 +357,7 @@ sc_Result sc_evaluate_none(sc_Node *node, sc_Context **ctx) {
 
   sc_evaluate_children(node, ctx);
 
-  result = sc_allocate_result(sc_deduce_result_type(node, ctx));
+  result = sc_allocate_result(sc_synthesize_result_type(node, ctx));
 
   switch (result.type) {
   case RESULT_INT:
@@ -443,7 +443,7 @@ sc_Result sc_evaluate_plus(sc_Node *node, sc_Context **ctx) {
 
   sc_evaluate_children(node, ctx);
 
-  sc_Result result = sc_allocate_result(sc_deduce_result_type(node, ctx));
+  sc_Result result = sc_allocate_result(sc_synthesize_result_type(node, ctx));
 
   switch (result.type) {
   case RESULT_INT: {
@@ -473,7 +473,7 @@ sc_Result sc_evaluate_minus(sc_Node *node, sc_Context **ctx) {
 
   sc_evaluate_children(node, ctx);
 
-  sc_Result result = sc_allocate_result(sc_deduce_result_type(node, ctx));
+  sc_Result result = sc_allocate_result(sc_synthesize_result_type(node, ctx));
 
   switch (result.type) {
   case RESULT_INT: {
@@ -513,7 +513,7 @@ sc_Result sc_evaluate_multiplication(sc_Node *node, sc_Context **ctx) {
 
   sc_evaluate_children(node, ctx);
 
-  sc_Result result = sc_allocate_result(sc_deduce_result_type(node, ctx));
+  sc_Result result = sc_allocate_result(sc_synthesize_result_type(node, ctx));
 
   switch (result.type) {
   case RESULT_INT: {
@@ -796,7 +796,7 @@ sc_Result sc_evaluate_equals(sc_Node *node, sc_Context **ctx) {
   }
 
   // So we now know for SURE that they are int or float
-  sc_ResultType type = sc_deduce_result_type(node, ctx);
+  sc_ResultType type = sc_synthesize_result_type(node, ctx);
 
   // "A label followed by declaration is a C23 extension" or something
   sc_IntPair ints;
@@ -841,7 +841,7 @@ sc_Result sc_evaluate_greater(sc_Node *node, sc_Context **ctx) {
   }
 
   // So we now know for SURE that they are int or float
-  sc_ResultType type = sc_deduce_result_type(node, ctx);
+  sc_ResultType type = sc_synthesize_result_type(node, ctx);
 
   // "A label followed by declaration is a C23 extension" or something
   sc_IntPair ints;
@@ -886,7 +886,7 @@ sc_Result sc_evaluate_lesser(sc_Node *node, sc_Context **ctx) {
   }
 
   // So we now know for SURE that they are int or float
-  sc_ResultType type = sc_deduce_result_type(node, ctx);
+  sc_ResultType type = sc_synthesize_result_type(node, ctx);
 
   // "A label followed by declaration is a C23 extension" or something
   sc_IntPair ints;
@@ -931,7 +931,7 @@ sc_Result sc_evaluate_not_equals(sc_Node *node, sc_Context **ctx) {
   }
 
   // So we now know for SURE that they are int or float
-  sc_ResultType type = sc_deduce_result_type(node, ctx);
+  sc_ResultType type = sc_synthesize_result_type(node, ctx);
 
   // "A label followed by declaration is a C23 extension" or something
   sc_IntPair ints;
@@ -976,7 +976,7 @@ sc_Result sc_evaluate_greater_equals(sc_Node *node, sc_Context **ctx) {
   }
 
   // So we now know for SURE that they are int or float
-  sc_ResultType type = sc_deduce_result_type(node, ctx);
+  sc_ResultType type = sc_synthesize_result_type(node, ctx);
 
   // "A label followed by declaration is a C23 extension" or something
   sc_IntPair ints;
@@ -1021,7 +1021,7 @@ sc_Result sc_evaluate_lesser_equals(sc_Node *node, sc_Context **ctx) {
   }
 
   // So we now know for SURE that they are int or float
-  sc_ResultType type = sc_deduce_result_type(node, ctx);
+  sc_ResultType type = sc_synthesize_result_type(node, ctx);
 
   // "A label followed by declaration is a C23 extension" or something
   sc_IntPair ints;
