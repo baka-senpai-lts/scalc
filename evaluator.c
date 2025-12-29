@@ -27,7 +27,6 @@ static int sc_node_to_int(void *val, sc_NodeType type, sc_Context **ctx) {
   case NODE_LITERAL:
   case NODE_NONE:
   case NODE_NODE:
-    /* assert(0 && "Passed non-end node to sc_node_to_int"); */
     return 0;
   }
 
@@ -51,7 +50,6 @@ static float sc_node_to_float(void *val, sc_NodeType type, sc_Context **ctx) {
   case NODE_LITERAL:
   case NODE_NONE:
   case NODE_NODE:
-    /* assert(0 && "Passed non-end node to sc_node_to_float"); */
     return 0;
   }
 
@@ -171,7 +169,6 @@ sc_NodeType sc_result_type_to_node_type(sc_ResultType r) {
   switch (r) {
   case RESULT_UNDEFINED:
     return NODE_NONE;
-    /* assert(0 && "RESULT_UNDEFINED passed to sc_result_type_to_node_type"); */
     break;
   case RESULT_INT:
     return NODE_INT;
@@ -472,7 +469,7 @@ sc_Result sc_evaluate_plus(sc_Node *node, sc_Context **ctx) {
 
 sc_Result sc_evaluate_minus(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_MINUS) &&
-         "Non-plus operation node passed to sc_evaluate_minus");
+         "Non-minus operation node passed to sc_evaluate_minus");
 
   sc_evaluate_children(node, ctx);
 
@@ -512,7 +509,7 @@ sc_Result sc_evaluate_minus(sc_Node *node, sc_Context **ctx) {
 
 sc_Result sc_evaluate_multiplication(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_MULTIPLICATION) &&
-         "Non-plus operation node passed to sc_evaluate_multiplication");
+         "Non-multiplication operation node passed to sc_evaluate_multiplication");
 
   sc_evaluate_children(node, ctx);
 
@@ -542,8 +539,6 @@ sc_Result sc_evaluate_multiplication(sc_Node *node, sc_Context **ctx) {
   }
 
   default:
-    // No idea how you can reach it, but better be safe than sorry
-    /* assert(0 && "Undefined result type"); */
     break;
   }
 
@@ -552,7 +547,7 @@ sc_Result sc_evaluate_multiplication(sc_Node *node, sc_Context **ctx) {
 
 sc_Result sc_evaluate_division(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_DIVISION) &&
-         "Non-plus operation node passed to sc_evaluate_division");
+         "Non-division operation node passed to sc_evaluate_division");
   sc_Result result = sc_allocate_result(RESULT_FLOAT);
 
   sc_evaluate_children(node, ctx);
