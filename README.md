@@ -57,6 +57,10 @@ You also can write it in postfix notation, like `2 2 +`, however it's currently 
 
 As for output, `~>` in REPL is here to show you what it figured out from your string, `=>` is for result of your expression.
 
+## Documentation
+
+For any actual usage instructions, see [doc/basics.md](./doc/basics.md)
+
 ## Testing
 
 To check code for memory leaks automatically, try to run `./run_random.sh`, it will feed scalc with 1000 random chunks, each containing 800 bytes. If it segfaults, check if it accidentally created an omega combinator, because you might be witnessing a divine intervention. If it's not anything like this and it just leaks memory, please open an issue. For manual testing just run it with valgrind, it works fairly well for this project.
