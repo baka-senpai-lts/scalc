@@ -2,7 +2,7 @@
 #define UTIL_H_
 
 // Fuck yea, we have our own bool now
-typedef int bool;
+typedef char bool;
 
 #define true 1
 #define false 0
