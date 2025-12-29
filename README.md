@@ -59,7 +59,7 @@ As for output, `~>` in REPL is here to show you what it figured out from your st
 
 ## Documentation
 
-For any actual usage instructions, see [doc/basics.md](./doc/basics.md)
+For any actual usage instructions, see [Getting Started](./doc/getting-started.md)
 
 ## Testing
 
