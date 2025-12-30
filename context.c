@@ -32,6 +32,10 @@ sc_Result sc_context_get(sc_Context *ctx, const char *key) {
     *(float *)result.result = *(float *)ctx->value.result;
     break;
 
+  case RESULT_STRING:
+    result.result = sc_alloc_strcpy(ctx->value.result);
+    break;
+
   case RESULT_NODE:
   case RESULT_LAMBDA:
     result.result = sc_copy_node_tree(ctx->value.result);
@@ -76,6 +80,10 @@ value_copy:
 
   case RESULT_FLOAT:
     *(float *)ctx->value.result = *(float *)value.result;
+    break;
+
+  case RESULT_STRING:
+    ctx->value.result = sc_alloc_strcpy(value.result);
     break;
 
   case RESULT_NODE:

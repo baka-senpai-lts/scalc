@@ -55,6 +55,29 @@ char *sc_parse_var(const char *str, long unsigned int *inc) {
   return result;
 }
 
+char *sc_parse_string(const char *str, long unsigned int *inc) {
+  str++; // skip first, it's a quote
+
+  const char *end = str;
+  long unsigned int len = 0;
+
+  for (; *end != '\0' && *end != '\n' && *end != '"'; end++, len++)
+    ;
+
+  char *result = malloc(len + 1);
+  char *ptr = result;
+
+  for (; str != end; ptr++, str++) {
+    *ptr = *str;
+  }
+
+  result[len] = '\0';
+
+  *inc = len + 2;
+
+  return result;
+}
+
 int sc_parse_int(const char *str, long unsigned int *inc) {
   int result = 0;
   int sign = 1;
@@ -117,6 +140,12 @@ skip_f:
 
 sc_TokenType sc_parse_token_type(const char *str) {
   // Trust me, it WORKS perfectly
+
+  if (*str == '"') {
+    // Look, I don't care if you didn't write a second quote, just enjoy that
+    // your expression is a string now
+    return TOK_STRING;
+  }
 
   // TODO: clean up this menace
   if (*str == '+' ||
@@ -454,6 +483,55 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
         // If it's not guaranteed to be free, fuck me
         appending->r = n;
         appending->r_type = NODE_LITERAL;
+      } else {
+        free(n);
+      }
+      break;
+    }
+
+    case TOK_STRING: {
+      char *n = sc_parse_string(str, &inner_inc);
+
+      if (!root->l && root->l_type == NODE_NONE) {
+        root->l = n;
+        root->l_type = NODE_STRING;
+      } else if (!root->r && root->r_type == NODE_NONE) {
+        root->r = n;
+        root->r_type = NODE_STRING;
+      } else if (appending && !appending->r && appending->r_type == NODE_NONE) {
+        appending->r = n;
+        appending->r_type = NODE_STRING;
+      } else if (!appending) {
+        appending = sc_append_operator_to_tree(&root, root->op);
+
+        if (appending) {
+          if (appending->r) {
+            if (appending->r_type == NODE_NODE) {
+              sc_free_node_tree_children(appending->r);
+            }
+            free(appending->r);
+          }
+
+          /* puts("Appending right"); */
+          appending->r = n;
+          appending->r_type = NODE_STRING;
+        } else {
+          if (root->r) {
+            if (root->r_type == NODE_NODE) {
+              sc_free_node_tree_children(root->r);
+            }
+            free(root->r);
+          }
+
+          root->r = n;
+          root->r_type = NODE_STRING;
+        }
+      } else if (appending && appending->r &&
+                 (appending->op == OP_LAMBDA || appending->op == OP_SET_EAGER ||
+                  appending->op == OP_SET_LAZY)) {
+        appending = sc_append_operator_to_tree(&appending, appending->op);
+        appending->r = n;
+        appending->r_type = NODE_STRING;
       } else {
         free(n);
       }

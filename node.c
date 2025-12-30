@@ -37,6 +37,7 @@ sc_Node *sc_copy_node_tree(const sc_Node *node) {
     result->l = malloc(sizeof(float));
     *(float *)result->l = *(float *)node->l;
     break;
+  case NODE_STRING:
   case NODE_VAR:
   case NODE_LITERAL:
     result->l = sc_alloc_strcpy(node->l);
@@ -59,6 +60,7 @@ sc_Node *sc_copy_node_tree(const sc_Node *node) {
     result->r = malloc(sizeof(float));
     *(float *)result->r = *(float *)node->r;
     break;
+  case NODE_STRING:
   case NODE_VAR:
   case NODE_LITERAL:
     result->r = sc_alloc_strcpy(node->r);

@@ -6,10 +6,11 @@ typedef enum {
   RESULT_UNDEFINED = 255,
   RESULT_INT = 1,
   RESULT_FLOAT = 2,
-  RESULT_LAMBDA = 3,
+  RESULT_STRING = 3,
+  RESULT_LAMBDA = 4,
 
   // A very special case, shouldn't appear anywhere outside of global context
-  RESULT_NODE = 4
+  RESULT_NODE = 5
 } sc_ResultType;
 
 typedef struct {

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "node.h"
+#include "util.h"
 
 sc_Result sc_allocate_result(sc_ResultType type) {
   sc_Result result = {.type = type};
@@ -17,6 +18,7 @@ sc_Result sc_allocate_result(sc_ResultType type) {
   case RESULT_FLOAT:
     result.result = malloc(sizeof(float));
     break;
+  case RESULT_STRING:
   case RESULT_NODE:
   case RESULT_LAMBDA:
     // Nothing to do, node must be allocated separately
@@ -52,6 +54,9 @@ sc_Result sc_copy_result(sc_Result original) {
     break;
   case RESULT_FLOAT:
     *(float *)copy.result = *(float *)original.result;
+    break;
+  case RESULT_STRING:
+    copy.result = sc_alloc_strcpy(original.result);
     break;
   case RESULT_NODE:
   case RESULT_LAMBDA:

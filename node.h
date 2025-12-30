@@ -31,8 +31,9 @@ typedef enum {
   NODE_NONE = 0,
   NODE_INT = 10,
   NODE_FLOAT = 12,
-  NODE_LITERAL = 13,
-  NODE_VAR = 15,
+  NODE_STRING = 13,
+  NODE_LITERAL = 20,
+  NODE_VAR = 21,
 } sc_NodeType;
 
 typedef struct {

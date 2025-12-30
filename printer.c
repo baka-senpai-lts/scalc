@@ -21,6 +21,9 @@ void sc_print_void_typed(void *p, sc_NodeType type) {
   case NODE_VAR:
     printf("v/%s", (char *)p);
     break;
+  case NODE_STRING:
+    printf("\"%s\"", (char *)p);
+    break;
   case NODE_NONE:
     fputs("None", stdout);
     break;

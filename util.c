@@ -50,6 +50,76 @@ char *sc_alloc_strcpy(const char *original) {
   return copy;
 }
 
+char *sc_alloc_strconcat(const char *str1, const char *str2) {
+  unsigned long int len1 = sc_strlen(str1);
+  unsigned long int len2 = sc_strlen(str2);
+
+  char *new = malloc(sizeof(char) * (len1 + len2) + 1);
+
+  // Seems reasonable
+  sc_strcpy(str1, new);
+  sc_strcpy(str2, new+len1);
+
+  return new;
+}
+
+char *sc_alloc_strmult(const char *str, unsigned int amount) {
+  unsigned long int len = sc_strlen(str);
+
+  char *new = malloc(sizeof(char) * len * amount + 1);
+
+  for (unsigned int i = 0; i < amount; i++) {
+    sc_strcpy(str, new + len * i);
+  }
+
+  return new;
+}
+
+
+char *sc_alloc_strreverse(const char *str) {
+  unsigned int len = (unsigned int)sc_strlen(str);
+
+  char *new = malloc(sizeof(char) * len + 1);
+
+  for (unsigned int i = 0; i < len; i++) {
+    new[i] = str[len-i-1];
+  }
+
+  new[len] = '\0';
+
+  return new;
+}
+
+char *sc_alloc_strslice(const char *str, unsigned int start, unsigned int end) {
+  unsigned long int len = sc_strlen(str);
+
+  if (start > len) {
+    start = (unsigned int)len;
+  }
+
+  if (end > len) {
+    end = (unsigned int)len;
+  }
+
+  if (end < start) {
+    unsigned int swap = end;
+    end = start;
+    start = swap;
+  }
+
+  unsigned long int new_len = end - start;
+
+  char *new = malloc(sizeof(char) * new_len + 1);
+
+  for(unsigned long int i = 0; i < new_len; i++) {
+    new[i] = str[start + i];
+  }
+
+  new[new_len] = '\0';
+
+  return new;
+}
+
 void sc_memmove_n(void *original, void *new, long unsigned int size) {
   // First copy to secondary buffer, then copy from first to second
   char *original_ch = (char *)original;

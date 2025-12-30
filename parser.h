@@ -8,12 +8,14 @@ typedef enum {
   TOK_INT,
   TOK_FLOAT,
   TOK_LITERAL,
-  TOK_VAR
+  TOK_VAR,
+  TOK_STRING
 } sc_TokenType;
 
 // All these parse first symbol in string
 char *sc_parse_literal(const char *, long unsigned int *);
 char *sc_parse_var(const char *, long unsigned int *);
+char *sc_parse_string(const char *, long unsigned int *);
 
 int sc_parse_int(const char *, long unsigned int *);
 float sc_parse_float(const char *, long unsigned int *);
