@@ -958,8 +958,6 @@ sc_Result sc_evaluate_equals(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_EQUALS) &&
          "Non-equals operation node passed to sc_evaluate_equals");
 
-  const sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
-
   sc_evaluate_children(node, ctx);
 
   if (node ->l_type == NODE_STRING && node->r_type == NODE_STRING) {
@@ -971,11 +969,11 @@ sc_Result sc_evaluate_equals(sc_Node *node, sc_Context **ctx) {
   }
 
   if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
-    return undefined;
+    return sc_construct_false();
   }
 
   if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
-    return undefined;
+    return sc_construct_false();
   }
 
   // So we now know for SURE that they are int or float
@@ -1003,7 +1001,7 @@ sc_Result sc_evaluate_equals(sc_Node *node, sc_Context **ctx) {
       return sc_construct_false();
     }
   default:
-    return undefined;
+    return sc_construct_false();
   }
 }
 
@@ -1011,16 +1009,14 @@ sc_Result sc_evaluate_greater(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_GREATER) &&
          "Non-greater operation node passed to sc_evaluate_greater");
 
-  const sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
-
   sc_evaluate_children(node, ctx);
 
   if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
-    return undefined;
+    return sc_construct_false();
   }
 
   if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
-    return undefined;
+    return sc_construct_false();
   }
 
   // So we now know for SURE that they are int or float
@@ -1048,7 +1044,7 @@ sc_Result sc_evaluate_greater(sc_Node *node, sc_Context **ctx) {
       return sc_construct_false();
     }
   default:
-    return undefined;
+    return sc_construct_false();
   }
 }
 
@@ -1056,16 +1052,14 @@ sc_Result sc_evaluate_lesser(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_LESSER) &&
          "Non-lesser operation node passed to sc_evaluate_lesser");
 
-  const sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
-
   sc_evaluate_children(node, ctx);
 
   if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
-    return undefined;
+    return sc_construct_false();
   }
 
   if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
-    return undefined;
+    return sc_construct_false();
   }
 
   // So we now know for SURE that they are int or float
@@ -1093,15 +1087,13 @@ sc_Result sc_evaluate_lesser(sc_Node *node, sc_Context **ctx) {
       return sc_construct_false();
     }
   default:
-    return undefined;
+    return sc_construct_false();
   }
 }
 
 sc_Result sc_evaluate_not_equals(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_NOT_EQUALS) &&
          "Non-not-equals operation node passed to sc_evaluate_not_equals");
-
-  const sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
 
   sc_evaluate_children(node, ctx);
 
@@ -1114,11 +1106,11 @@ sc_Result sc_evaluate_not_equals(sc_Node *node, sc_Context **ctx) {
   }
 
   if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
-    return undefined;
+    return sc_construct_false();
   }
 
   if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
-    return undefined;
+    return sc_construct_false();
   }
 
   // So we now know for SURE that they are int or float
@@ -1146,7 +1138,7 @@ sc_Result sc_evaluate_not_equals(sc_Node *node, sc_Context **ctx) {
       return sc_construct_false();
     }
   default:
-    return undefined;
+    return sc_construct_false();
   }
 }
 
@@ -1154,16 +1146,14 @@ sc_Result sc_evaluate_greater_equals(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_GREATER_EQUALS) &&
          "Non-greater-equals operation node passed to sc_evaluate_greater_equals");
 
-  const sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
-
   sc_evaluate_children(node, ctx);
 
   if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
-    return undefined;
+    return sc_construct_false();
   }
 
   if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
-    return undefined;
+    return sc_construct_false();
   }
 
   // So we now know for SURE that they are int or float
@@ -1191,7 +1181,7 @@ sc_Result sc_evaluate_greater_equals(sc_Node *node, sc_Context **ctx) {
       return sc_construct_false();
     }
   default:
-    return undefined;
+    return sc_construct_false();
   }
 }
 
@@ -1199,16 +1189,14 @@ sc_Result sc_evaluate_lesser_equals(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_LESSER_EQUALS) &&
          "Non-lesser-equals operation node passed to sc_evaluate_lesser_equals");
 
-  const sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
-
   sc_evaluate_children(node, ctx);
 
   if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
-    return undefined;
+    return sc_construct_false();
   }
 
   if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
-    return undefined;
+    return sc_construct_false();
   }
 
   // So we now know for SURE that they are int or float
@@ -1236,7 +1224,7 @@ sc_Result sc_evaluate_lesser_equals(sc_Node *node, sc_Context **ctx) {
       return sc_construct_false();
     }
   default:
-    return undefined;
+    return sc_construct_false();
   }
 }
 
