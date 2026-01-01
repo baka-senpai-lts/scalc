@@ -542,6 +542,9 @@ sc_Result sc_evaluate_plus(sc_Node *node, sc_Context **ctx) {
   }
 
   default:
+    sc_free_result(result);
+    result.result = NULL;
+    result.type = RESULT_UNDEFINED;
     break;
   }
 
@@ -630,6 +633,9 @@ sc_Result sc_evaluate_minus(sc_Node *node, sc_Context **ctx) {
   }
 
   default:
+    sc_free_result(result);
+    result.result = NULL;
+    result.type = RESULT_UNDEFINED;
     break;
   }
 
@@ -702,6 +708,9 @@ sc_Result sc_evaluate_multiplication(sc_Node *node, sc_Context **ctx) {
   }
 
   default:
+    sc_free_result(result);
+    result.result = NULL;
+    result.type = RESULT_UNDEFINED;
     break;
   }
 
