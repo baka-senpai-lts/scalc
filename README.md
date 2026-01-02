@@ -68,7 +68,7 @@ To check code for memory leaks automatically, try to run `./run_random.sh`, it w
 ## Fun facts
 
 - I checked for everything I could and didn't find a way it could possibly leak memory without crashing.
-- Binary size is currently 28KB on my machine with `-Oz`.
+- Binary size is currently 32KB on my machine with `-Oz`.
 - Parser is so permissive that it won't ever throw you an error. But if I myself couldn't make sense of whatever you wrote, parser won't too.
 
 ## Known issues
