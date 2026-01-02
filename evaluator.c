@@ -1,6 +1,7 @@
 #include "evaluator.h"
 
 #include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "common_nodes.h"
@@ -210,6 +211,13 @@ sc_ResultType sc_synthesize_result_type(const sc_Node *node, sc_Context **ctx) {
   sc_NodeType result_node_type = sc_max(node->l_type, node->r_type);
 
   if (node->op == OP_LAMBDA) {
+    return RESULT_LAMBDA;
+  }
+
+  if (((node->l_type == NODE_NODE && ((sc_Node *)node->l)->op == OP_LAMBDA) ||
+       (node->r_type == NODE_NODE && ((sc_Node *)node->r)->op == OP_LAMBDA)) &&
+      (node->op != OP_APPLY || node->op != OP_APPLY_LAZY) &&
+      (node->l_type != NODE_NONE && node->r_type != NODE_NONE)) {
     return RESULT_LAMBDA;
   }
 
@@ -541,6 +549,77 @@ sc_Result sc_evaluate_plus(sc_Node *node, sc_Context **ctx) {
     break;
   }
 
+  case RESULT_LAMBDA: {
+    sc_Node *lambda = node->l;
+
+    void *annotation;
+    sc_NodeType annotation_type;
+
+    bool on_right;
+
+    if (node->l_type == NODE_NODE && ((sc_Node *)node->l)->op == OP_LAMBDA) {
+      lambda = node->l;
+
+      annotation = node->r;
+      annotation_type = node->r_type;
+      on_right = true;
+    } else {
+      lambda = node->r;
+
+      annotation = node->l;
+      annotation_type = node->l_type;
+      on_right = false;
+    }
+
+    sc_Node *body = lambda->r;
+    sc_Node *new_body;
+
+    void *right;
+
+    switch (annotation_type) {
+    case NODE_FLOAT: {
+      right = malloc(sizeof(float));
+      *(float *)right = *(float *)annotation;
+      break;
+    }
+
+    case NODE_INT: {
+      right = malloc(sizeof(int));
+      *(int *)right = *(int *)annotation;
+      break;
+    }
+
+    case NODE_STRING: {
+      right = sc_alloc_strcpy(annotation);
+      break;
+    }
+
+    case NODE_NODE: {
+      right = sc_copy_node_tree(annotation);
+      break;
+    }
+
+    default: {
+      sc_free_result(result);
+      result.result = NULL;
+      result.type = RESULT_UNDEFINED;
+      return result;
+    }
+    }
+
+    if (on_right) {
+      new_body =
+          sc_construct_node(body, NODE_NODE, OP_PLUS, right, annotation_type);
+    } else {
+      new_body =
+          sc_construct_node(right, annotation_type, OP_PLUS, body, NODE_NODE);
+    }
+
+    lambda->r = new_body;
+    result.result = sc_copy_node_tree(lambda);
+    break;
+  }
+
   default:
     sc_free_result(result);
     result.result = NULL;
@@ -632,6 +711,77 @@ sc_Result sc_evaluate_minus(sc_Node *node, sc_Context **ctx) {
     break;
   }
 
+  case RESULT_LAMBDA: {
+    sc_Node *lambda = node->l;
+
+    void *annotation;
+    sc_NodeType annotation_type;
+
+    bool on_right;
+
+    if (node->l_type == NODE_NODE && ((sc_Node *)node->l)->op == OP_LAMBDA) {
+      lambda = node->l;
+
+      annotation = node->r;
+      annotation_type = node->r_type;
+      on_right = true;
+    } else {
+      lambda = node->r;
+
+      annotation = node->l;
+      annotation_type = node->l_type;
+      on_right = false;
+    }
+
+    sc_Node *body = lambda->r;
+    sc_Node *new_body;
+
+    void *right;
+
+    switch (annotation_type) {
+    case NODE_FLOAT: {
+      right = malloc(sizeof(float));
+      *(float *)right = *(float *)annotation;
+      break;
+    }
+
+    case NODE_INT: {
+      right = malloc(sizeof(int));
+      *(int *)right = *(int *)annotation;
+      break;
+    }
+
+    case NODE_STRING: {
+      right = sc_alloc_strcpy(annotation);
+      break;
+    }
+
+    case NODE_NODE: {
+      right = sc_copy_node_tree(annotation);
+      break;
+    }
+
+    default: {
+      sc_free_result(result);
+      result.result = NULL;
+      result.type = RESULT_UNDEFINED;
+      return result;
+    }
+    }
+
+    if (on_right) {
+      new_body =
+          sc_construct_node(body, NODE_NODE, OP_MINUS, right, annotation_type);
+    } else {
+      new_body =
+          sc_construct_node(right, annotation_type, OP_MINUS, body, NODE_NODE);
+    }
+
+    lambda->r = new_body;
+    result.result = sc_copy_node_tree(lambda);
+    break;
+  }
+
   default:
     sc_free_result(result);
     result.result = NULL;
@@ -707,6 +857,77 @@ sc_Result sc_evaluate_multiplication(sc_Node *node, sc_Context **ctx) {
     break;
   }
 
+  case RESULT_LAMBDA: {
+    sc_Node *lambda = node->l;
+
+    void *annotation;
+    sc_NodeType annotation_type;
+
+    bool on_right;
+
+    if (node->l_type == NODE_NODE && ((sc_Node *)node->l)->op == OP_LAMBDA) {
+      lambda = node->l;
+
+      annotation = node->r;
+      annotation_type = node->r_type;
+      on_right = true;
+    } else {
+      lambda = node->r;
+
+      annotation = node->l;
+      annotation_type = node->l_type;
+      on_right = false;
+    }
+
+    sc_Node *body = lambda->r;
+    sc_Node *new_body;
+
+    void *right;
+
+    switch (annotation_type) {
+    case NODE_FLOAT: {
+      right = malloc(sizeof(float));
+      *(float *)right = *(float *)annotation;
+      break;
+    }
+
+    case NODE_INT: {
+      right = malloc(sizeof(int));
+      *(int *)right = *(int *)annotation;
+      break;
+    }
+
+    case NODE_STRING: {
+      right = sc_alloc_strcpy(annotation);
+      break;
+    }
+
+    case NODE_NODE: {
+      right = sc_copy_node_tree(annotation);
+      break;
+    }
+
+    default: {
+      sc_free_result(result);
+      result.result = NULL;
+      result.type = RESULT_UNDEFINED;
+      return result;
+    }
+    }
+
+    if (on_right) {
+      new_body = sc_construct_node(body, NODE_NODE, OP_MULTIPLICATION, right,
+                                   annotation_type);
+    } else {
+      new_body = sc_construct_node(right, annotation_type, OP_MULTIPLICATION,
+                                   body, NODE_NODE);
+    }
+
+    lambda->r = new_body;
+    result.result = sc_copy_node_tree(lambda);
+    break;
+  }
+
   default:
     sc_free_result(result);
     result.result = NULL;
@@ -720,9 +941,84 @@ sc_Result sc_evaluate_multiplication(sc_Node *node, sc_Context **ctx) {
 sc_Result sc_evaluate_division(sc_Node *node, sc_Context **ctx) {
   assert((node->op == OP_DIVISION) &&
          "Non-division operation node passed to sc_evaluate_division");
-  sc_Result result = sc_allocate_result(RESULT_FLOAT);
+  sc_Result result;
 
   sc_evaluate_children(node, ctx);
+
+  if (sc_synthesize_result_type(node, ctx) == RESULT_LAMBDA) {
+    result = sc_allocate_result(RESULT_LAMBDA);
+
+    sc_Node *lambda = node->l;
+
+    void *annotation;
+    sc_NodeType annotation_type;
+
+    bool on_right;
+
+    if (node->l_type == NODE_NODE && ((sc_Node *)node->l)->op == OP_LAMBDA) {
+      lambda = node->l;
+
+      annotation = node->r;
+      annotation_type = node->r_type;
+      on_right = true;
+    } else {
+      lambda = node->r;
+
+      annotation = node->l;
+      annotation_type = node->l_type;
+      on_right = false;
+    }
+
+    sc_Node *body = lambda->r;
+    sc_Node *new_body;
+
+    void *right;
+
+    switch (annotation_type) {
+    case NODE_FLOAT: {
+      right = malloc(sizeof(float));
+      *(float *)right = *(float *)annotation;
+      break;
+    }
+
+    case NODE_INT: {
+      right = malloc(sizeof(int));
+      *(int *)right = *(int *)annotation;
+      break;
+    }
+
+    case NODE_STRING: {
+      right = sc_alloc_strcpy(annotation);
+      break;
+    }
+
+    case NODE_NODE: {
+      right = sc_copy_node_tree(annotation);
+      break;
+    }
+
+    default: {
+      sc_free_result(result);
+      result.result = NULL;
+      result.type = RESULT_UNDEFINED;
+      return result;
+    }
+    }
+
+    if (on_right) {
+      new_body = sc_construct_node(body, NODE_NODE, OP_DIVISION, right,
+                                   annotation_type);
+    } else {
+      new_body = sc_construct_node(right, annotation_type, OP_DIVISION, body,
+                                   NODE_NODE);
+    }
+
+    lambda->r = new_body;
+    result.result = sc_copy_node_tree(lambda);
+    return result;
+  }
+
+  result = sc_allocate_result(RESULT_FLOAT);
 
   sc_FloatPair pair = sc_end_node_to_float_pair(node, ctx);
 
