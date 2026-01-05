@@ -32,6 +32,7 @@ sc_Result sc_context_get(sc_Context *ctx, const char *key) {
     *(float *)result.result = *(float *)ctx->value.result;
     break;
 
+  case RESULT_LITERAL:
   case RESULT_STRING:
     result.result = sc_alloc_strcpy(ctx->value.result);
     break;
@@ -82,6 +83,7 @@ value_copy:
     *(float *)ctx->value.result = *(float *)value.result;
     break;
 
+  case RESULT_LITERAL:
   case RESULT_STRING:
     ctx->value.result = sc_alloc_strcpy(value.result);
     break;

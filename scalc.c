@@ -51,6 +51,9 @@ int main(void) {
     case RESULT_STRING:
       printf("=> \"%s\"\n", (char *)result.result);
       break;
+    case RESULT_LITERAL:
+      printf("=> <literal> %s\n", (char *)result.result);
+      break;
     case RESULT_LAMBDA:
       printf("=> <lambda> ");
       sc_print_node(result.result);

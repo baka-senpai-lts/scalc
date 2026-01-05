@@ -106,6 +106,7 @@ skip_r_node:
     case RESULT_LAMBDA:
       root->l = sc_copy_node_tree(sub.result);
       break;
+    case RESULT_LITERAL:
     case RESULT_STRING:
       root->l = sc_alloc_strcpy(sub.result);
       break;
@@ -130,6 +131,7 @@ skip_r_node:
       root->r = malloc(sizeof(float));
       *(float *)(root->r) = *(float *)sub.result;
       break;
+    case RESULT_LITERAL:
     case RESULT_STRING:
       root->r = sc_alloc_strcpy(sub.result);
       break;
@@ -170,6 +172,8 @@ sc_ResultType sc_node_type_to_result_type(sc_NodeType n) {
     return RESULT_FLOAT;
   case NODE_STRING:
     return RESULT_STRING;
+  case NODE_LITERAL:
+    return RESULT_LITERAL;
   default:
     break;
   }
@@ -190,6 +194,8 @@ sc_NodeType sc_result_type_to_node_type(sc_ResultType r) {
     return NODE_NODE;
   case RESULT_STRING:
     return NODE_STRING;
+  case RESULT_LITERAL:
+    return NODE_LITERAL;
   default:
     break;
   }
@@ -393,6 +399,9 @@ sc_Result sc_evaluate_none(sc_Node *node, sc_Context **ctx) {
   case RESULT_STRING:
     result.result = sc_alloc_strcpy(node->l);
     break;
+  case RESULT_LITERAL:
+    result.result = sc_alloc_strcpy(node->l);
+    break;
   case RESULT_NODE:
   case RESULT_LAMBDA:
     result.result = sc_copy_node_tree(node->l);
@@ -407,11 +416,11 @@ sc_Result sc_evaluate_none(sc_Node *node, sc_Context **ctx) {
 sc_Result sc_evaluate_set_eager(sc_Node *node, sc_Context **ctx) {
   sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
 
+  sc_evaluate_children(node, ctx);
+
   if (node->l_type != NODE_LITERAL) {
     return undefined;
   }
-
-  sc_dereference_children(node, ctx);
 
   sc_Result res = sc_allocate_result(sc_node_type_to_result_type(node->r_type));
 
@@ -425,12 +434,10 @@ sc_Result sc_evaluate_set_eager(sc_Node *node, sc_Context **ctx) {
     case NODE_FLOAT:
       *(float *)res.result = *(float *)node->r;
       break;
+    case NODE_LITERAL:
     case NODE_STRING:
       res.result = sc_alloc_strcpy(node->r);
       break;
-    case NODE_LITERAL:
-      // TODO: add RESULT_LITERAL
-      return undefined;
     case NODE_VAR:
       return sc_context_get(*ctx, node->r);
     case NODE_NONE:
@@ -443,8 +450,14 @@ sc_Result sc_evaluate_set_eager(sc_Node *node, sc_Context **ctx) {
 
 sc_Result sc_evaluate_set_lazy(sc_Node *node, sc_Context **ctx) {
   sc_Result undefined = {.result = NULL, .type = RESULT_UNDEFINED};
+  sc_Result left;
 
-  if (node->l_type != NODE_LITERAL) {
+  if (node->l_type == NODE_NODE) {
+    left = sc_evaluate_node(node->l, ctx);
+  } else if (node->l_type == NODE_LITERAL) {
+    left = sc_allocate_result(RESULT_LITERAL);
+    left.result = sc_alloc_strcpy(node->l);
+  } else {
     return undefined;
   }
 
@@ -463,7 +476,9 @@ sc_Result sc_evaluate_set_lazy(sc_Node *node, sc_Context **ctx) {
   res.type = RESULT_NODE;
   res.result = sc_copy_node_tree(node->r);
 
-  sc_context_set(ctx, node->l, res);
+  sc_context_set(ctx, left.result, res);
+
+  sc_free_result(left);
   return res;
 }
 
@@ -1095,6 +1110,9 @@ sc_Result sc_evaluate_apply(sc_Node *node, sc_Context **ctx) {
     case RESULT_FLOAT:
       *(float *)sub.result = *(float *)node->r;
       break;
+    case RESULT_LITERAL:
+      sub.result = sc_alloc_strcpy(node->r);
+      break;
     case RESULT_STRING:
       sub.result = sc_alloc_strcpy(node->r);
       break;
@@ -1132,6 +1150,9 @@ sc_Result sc_evaluate_apply(sc_Node *node, sc_Context **ctx) {
       break;
     case RESULT_FLOAT:
       *(float *)result.result = *(float *)lambda->r;
+      break;
+    case RESULT_LITERAL:
+      result.result = sc_alloc_strcpy(node->r);
       break;
     case RESULT_STRING:
       result.result = sc_alloc_strcpy(lambda->r);
@@ -1204,6 +1225,7 @@ sc_Result sc_evaluate_apply_lazy(sc_Node *node, sc_Context **ctx) {
     case RESULT_FLOAT:
       *(float *)sub.result = *(float *)node->r;
       break;
+    case RESULT_LITERAL:
     case RESULT_STRING:
       sub.result = sc_alloc_strcpy(node->r);
       break;
@@ -1242,6 +1264,7 @@ sc_Result sc_evaluate_apply_lazy(sc_Node *node, sc_Context **ctx) {
     case RESULT_FLOAT:
       *(float *)result.result = *(float *)lambda->r;
       break;
+    case RESULT_LITERAL:
     case RESULT_STRING:
       result.result = sc_alloc_strcpy(lambda->r);
       break;

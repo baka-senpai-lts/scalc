@@ -18,6 +18,7 @@ sc_Result sc_allocate_result(sc_ResultType type) {
   case RESULT_FLOAT:
     result.result = malloc(sizeof(float));
     break;
+  case RESULT_LITERAL:
   case RESULT_STRING:
   case RESULT_NODE:
   case RESULT_LAMBDA:
@@ -55,6 +56,7 @@ sc_Result sc_copy_result(sc_Result original) {
   case RESULT_FLOAT:
     *(float *)copy.result = *(float *)original.result;
     break;
+  case RESULT_LITERAL:
   case RESULT_STRING:
     copy.result = sc_alloc_strcpy(original.result);
     break;

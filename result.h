@@ -8,9 +8,10 @@ typedef enum {
   RESULT_FLOAT = 2,
   RESULT_STRING = 3,
   RESULT_LAMBDA = 4,
+  RESULT_LITERAL = 5,
 
   // A very special case, shouldn't appear anywhere outside of global context
-  RESULT_NODE = 5
+  RESULT_NODE = 6
 } sc_ResultType;
 
 typedef struct {
