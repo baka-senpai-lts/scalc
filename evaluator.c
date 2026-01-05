@@ -1179,6 +1179,14 @@ sc_Result sc_evaluate_apply_lazy(sc_Node *node, sc_Context **ctx) {
   sc_Node *lambda;
   sc_Result l_evaluated = {.type = RESULT_UNDEFINED, .result = NULL};
 
+  // Very special copy-pasta
+  if (node->r_type == NODE_VAR) {
+    sc_Node *tmp =
+        sc_construct_node(node->r, node->r_type, OP_NONE, NULL, NODE_NONE);
+    node->r = tmp;
+    node->r_type = NODE_NODE;
+  }
+
   sc_dereference_children(node, ctx);
 
   // Check if left is a node
