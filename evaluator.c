@@ -1441,11 +1441,11 @@ sc_Result sc_evaluate_not_equals(sc_Node *node, sc_Context **ctx) {
   }
 
   if (node->l_type != NODE_INT && node->l_type != NODE_FLOAT) {
-    return sc_construct_false();
+    return sc_construct_true();
   }
 
   if (node->r_type != NODE_INT && node->r_type != NODE_FLOAT) {
-    return sc_construct_false();
+    return sc_construct_true();
   }
 
   // So we now know for SURE that they are int or float
@@ -1473,7 +1473,7 @@ sc_Result sc_evaluate_not_equals(sc_Node *node, sc_Context **ctx) {
       return sc_construct_false();
     }
   default:
-    return sc_construct_false();
+    return sc_construct_true();
   }
 }
 
