@@ -1,3 +1,5 @@
+![scalc logo](./resources/logo.svg)
+
 # scalc - Suddenly Complete cALCulator
 
 I built this calculator for personal usage and added lambdas. Now it's Turing-complete.
