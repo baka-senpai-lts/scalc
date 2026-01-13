@@ -75,3 +75,7 @@ To check code for memory leaks automatically, try to run `./run_random.sh`, it w
 
 - It segfaults on infinite recursion.
 - It might be painfully slow in some cases, but I didn't find them.
+
+## Contributors
+
+For contributors list check out our [CONTRIBUTORS.md](./CONTRIBUTORS.md)
