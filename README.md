@@ -1,4 +1,4 @@
-![scalc logo](./resources/logo.svg)
+![scalc logo](./resources/banner.svg)
 
 # scalc - Suddenly Complete cALCulator
 
