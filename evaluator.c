@@ -525,7 +525,7 @@ sc_Result sc_evaluate_plus(sc_Node *node, sc_Context **ctx) {
       }
 
       if (*(int *)node->l < 0) {
-        *(int *)node->l = -*(int *)node->r;
+        *(int *)node->l = -*(int *)node->l;
         node->op = OP_MINUS;
         result = sc_evaluate_node(node, ctx);
         break;
