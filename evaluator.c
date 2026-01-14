@@ -222,7 +222,8 @@ sc_ResultType sc_synthesize_result_type(const sc_Node *node, sc_Context **ctx) {
   if (((node->l_type == NODE_NODE && ((sc_Node *)node->l)->op == OP_LAMBDA) ||
        (node->r_type == NODE_NODE && ((sc_Node *)node->r)->op == OP_LAMBDA)) &&
       (node->op != OP_APPLY || node->op != OP_APPLY_LAZY) &&
-      (node->l_type != NODE_NONE && node->r_type != NODE_NONE)) {
+      (node->l_type != NODE_NONE && node->r_type != NODE_NONE) &&
+      node->op != OP_NONE) {
     return RESULT_LAMBDA;
   }
 
