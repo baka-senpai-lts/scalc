@@ -256,66 +256,67 @@ sc_Operation sc_parse_operation(const char *str, long unsigned int *inc) {
 static sc_Node *sc_append_operator_to_tree(sc_Node **root, sc_Operation op) {
   if ((*root)->op == OP_NONE) {
     (*root)->op = op;
-  } else {
-    sc_Node *new_node;
+  }
 
-    // I guess we support everything now?
-    switch (op) {
-    case OP_APPLY:
-    case OP_APPLY_LAZY:
-    case OP_PLUS:
-    case OP_MINUS:
-      if (!(*root)->r) {
-        break;
-      }
-      new_node = malloc(sizeof(sc_Node));
+  sc_Node *new_node;
 
-    append:
-      new_node->l = (*root);
-      new_node->l_type = NODE_NODE;
-      new_node->r = NULL;
-      new_node->r_type = NODE_NONE;
-      new_node->op = op;
-
-      (*root) = new_node;
-      break;
-    case OP_MULTIPLICATION:
-    case OP_DIVISION:
-      if (!(*root)->r) {
-        break;
-      }
-      new_node = malloc(sizeof(sc_Node));
-
-      if ((*root)->op == OP_DIVISION || (*root)->op == OP_MULTIPLICATION) {
-        goto append;
-      }
-
-    on_right:
-      // We have to rotate the tree a little for this shit
-      new_node->l = (*root)->r;
-      new_node->l_type = (*root)->r_type;
-      new_node->r = NULL;
-      new_node->r_type = NODE_NONE;
-      new_node->op = op;
-
-      (*root)->r = new_node;
-      (*root)->r_type = NODE_NODE;
-
-      return new_node;
-      break;
-    case OP_SET_EAGER:
-    case OP_SET_LAZY:
-    case OP_LAMBDA:
-      if (!(*root)->r) {
-        break;
-      }
-
-      new_node = malloc(sizeof(sc_Node));
-
-      goto on_right; // Yes I know
-    default:
+  // I guess we support everything now?
+  switch (op) {
+  case OP_APPLY:
+  case OP_APPLY_LAZY:
+  case OP_PLUS:
+  case OP_MINUS:
+    if (!(*root)->r) {
       break;
     }
+    new_node = malloc(sizeof(sc_Node));
+
+  append:
+    new_node->l = (*root);
+    new_node->l_type = NODE_NODE;
+    new_node->r = NULL;
+    new_node->r_type = NODE_NONE;
+    new_node->op = op;
+
+    (*root) = new_node;
+    break;
+  case OP_MULTIPLICATION:
+  case OP_DIVISION:
+    if (!(*root)->r) {
+      break;
+    }
+    new_node = malloc(sizeof(sc_Node));
+
+    if ((*root)->op == OP_DIVISION || (*root)->op == OP_MULTIPLICATION) {
+      goto append;
+    }
+
+  on_right:
+    // We have to rotate the tree a little for this shit
+    new_node->l = (*root)->r;
+    new_node->l_type = (*root)->r_type;
+    new_node->r = NULL;
+    new_node->r_type = NODE_NONE;
+    new_node->op = op;
+
+    (*root)->r = new_node;
+    (*root)->r_type = NODE_NODE;
+
+    return new_node;
+    break;
+  case OP_NONE:
+  case OP_SET_EAGER:
+  case OP_SET_LAZY:
+  case OP_LAMBDA:
+    if (!(*root)->r) {
+      break;
+    }
+
+    new_node = malloc(sizeof(sc_Node));
+
+    goto on_right; // Yes I know
+  default:
+    break;
   }
 
   return NULL;
@@ -365,7 +366,7 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
         }
       } else if (appending && appending->r &&
                  (appending->op == OP_LAMBDA || appending->op == OP_SET_EAGER ||
-                  appending->op == OP_SET_LAZY)) {
+                  appending->op == OP_SET_LAZY || appending->op == OP_NONE)) {
         // Insert into right on appending, steal right and put to left,
         // enables implicit currying like (\ 'a 'b 'c (+ a b c))
         appending = sc_append_operator_to_tree(&appending, appending->op);
@@ -424,7 +425,7 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
         }
       } else if (appending && appending->r &&
                  (appending->op == OP_LAMBDA || appending->op == OP_SET_EAGER ||
-                  appending->op == OP_SET_LAZY)) {
+                  appending->op == OP_SET_LAZY || appending->op == OP_NONE)) {
         // Insert into right on appending, steal right and put to left,
         // enables implicit currying like (\ 'a 'b 'c (+ a b c))
         appending = sc_append_operator_to_tree(&appending, appending->op);
@@ -476,7 +477,7 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
         }
       } else if (appending && appending->r &&
                  (appending->op == OP_LAMBDA || appending->op == OP_SET_EAGER ||
-                  appending->op == OP_SET_LAZY)) {
+                  appending->op == OP_SET_LAZY || appending->op == OP_NONE)) {
         // Insert into right on appending, steal right and put to left,
         // enables implicit currying like (\ 'a 'b 'c (+ a b c))
         appending = sc_append_operator_to_tree(&appending, appending->op);
@@ -528,7 +529,7 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
         }
       } else if (appending && appending->r &&
                  (appending->op == OP_LAMBDA || appending->op == OP_SET_EAGER ||
-                  appending->op == OP_SET_LAZY)) {
+                  appending->op == OP_SET_LAZY || appending->op == OP_NONE)) {
         appending = sc_append_operator_to_tree(&appending, appending->op);
         appending->r = n;
         appending->r_type = NODE_STRING;
@@ -555,7 +556,7 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
         appending->r_type = NODE_INT;
       } else if (appending && appending->r &&
                  (appending->op == OP_LAMBDA || appending->op == OP_SET_EAGER ||
-                  appending->op == OP_SET_LAZY)) {
+                  appending->op == OP_SET_LAZY || appending->op == OP_NONE)) {
         appending = sc_append_operator_to_tree(&appending, appending->op);
         appending->r = malloc(sizeof(int));
         *(int *)appending->r = n;
@@ -606,7 +607,7 @@ sc_Node *sc_str_to_node(const char *str, long unsigned int *inc) {
         appending->r_type = NODE_FLOAT;
       } else if (appending && appending->r &&
                  (appending->op == OP_LAMBDA || appending->op == OP_SET_EAGER ||
-                  appending->op == OP_SET_LAZY)) {
+                  appending->op == OP_SET_LAZY || appending->op == OP_NONE)) {
         appending = sc_append_operator_to_tree(&appending, appending->op);
         appending->r = malloc(sizeof(float));
         *(float *)appending->r = n;

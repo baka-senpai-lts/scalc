@@ -232,6 +232,26 @@ sc_ResultType sc_synthesize_result_type(const sc_Node *node, sc_Context **ctx) {
   }
 
   if (node->op == OP_NONE) {
+    if (node->r_type != NODE_NONE) {
+      if (r == RESULT_UNDEFINED && node->r_type != NODE_VAR &&
+          node->r_type != NODE_LITERAL && node->r_type != NODE_NONE &&
+          node->r_type != NODE_STRING) {
+        r = sc_synthesize_result_type(node->r, ctx);
+      } else if (node->r_type == NODE_VAR) {
+        r_r = sc_context_get(*ctx, node->r);
+
+        if (r_r.type == RESULT_NODE) {
+          r = sc_synthesize_result_type(r_r.result, ctx);
+        } else {
+          r = r_r.type;
+        }
+
+        sc_free_result(r_r);
+      }
+
+      return r;
+    }
+
     if (l == RESULT_UNDEFINED && node->l_type != NODE_VAR &&
         node->l_type != NODE_LITERAL && node->l_type != NODE_NONE &&
         node->l_type != NODE_STRING) {
@@ -387,24 +407,32 @@ sc_Result sc_evaluate_none(sc_Node *node, sc_Context **ctx) {
 
   sc_evaluate_children(node, ctx);
 
+  void *working_node;
+
+  if (node->r_type != NODE_NONE) {
+    working_node = node->r;
+  } else {
+    working_node = node->l;
+  }
+
   result = sc_allocate_result(sc_synthesize_result_type(node, ctx));
 
   switch (result.type) {
   case RESULT_INT:
-    *(int *)result.result = *(int *)node->l;
+    *(int *)result.result = *(int *)working_node;
     break;
   case RESULT_FLOAT:
-    *(float *)result.result = *(float *)node->l;
+    *(float *)result.result = *(float *)working_node;
     break;
   case RESULT_STRING:
-    result.result = sc_alloc_strcpy(node->l);
+    result.result = sc_alloc_strcpy(working_node);
     break;
   case RESULT_LITERAL:
-    result.result = sc_alloc_strcpy(node->l);
+    result.result = sc_alloc_strcpy(working_node);
     break;
   case RESULT_NODE:
   case RESULT_LAMBDA:
-    result.result = sc_copy_node_tree(node->l);
+    result.result = sc_copy_node_tree(working_node);
     break;
   case RESULT_UNDEFINED:
     break;
