@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "config.h"
+#include "file_reader.h"
 #include "evaluator.h"
 #include "node.h"
 #include "parser.h"
@@ -12,10 +14,38 @@
 #include "util.h"
 #include "context.h"
 
-int main(void) {
+int main(int argc, char **argv) {
+  sc_Config config = sc_parse_args(argc, argv);
+
   // Too much for stack to hold consistently
   char *buffer = malloc(sizeof(char) * BUFSIZ);
   sc_Context *ctx = NULL;
+
+  for (int i = 0; i < config.files_amount; i++) {
+    int error = 0;
+
+    sc_FileMap file = sc_map_text_file(config.load_files[i], &error);
+
+    if (error != SC_OK) {
+      fprintf(stderr, "Error opening file '%s': %s\n", config.load_files[i],
+              sc_file_error_as_string(error));
+
+      sc_free_config(&config);
+      sc_context_free(ctx);
+      free(buffer);
+      exit(1);
+    }
+
+    sc_Node *file_root = sc_str_to_node(file.ptr, NULL);
+
+    // We only need to populate context from there
+    sc_free_result(sc_evaluate_node_safe(file_root, &ctx));
+
+    sc_free_node_tree_children(file_root);
+    free(file_root);
+
+    sc_unmap_file(&file);
+  }
 
   for (;;) {
     // Because fuck you
@@ -75,6 +105,7 @@ int main(void) {
     free(root);
   }
 
+  sc_free_config(&config);
   sc_context_free(ctx);
   free(buffer);
   puts("If you can read this, WE DID NOT SEGFAULT");
