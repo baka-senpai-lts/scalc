@@ -213,7 +213,8 @@ sc_ResultType sc_synthesize_result_type(const sc_Node *node, sc_Context **ctx) {
   sc_Result l_r;
   sc_Result r_r;
 
-  sc_NodeType result_node_type = sc_max(node->l_type, node->r_type);
+  sc_NodeType result_node_type =
+      (sc_NodeType)sc_max((int)node->l_type, (int)node->r_type);
 
   if (node->op == OP_LAMBDA) {
     return RESULT_LAMBDA;
@@ -221,7 +222,7 @@ sc_ResultType sc_synthesize_result_type(const sc_Node *node, sc_Context **ctx) {
 
   if (((node->l_type == NODE_NODE && ((sc_Node *)node->l)->op == OP_LAMBDA) ||
        (node->r_type == NODE_NODE && ((sc_Node *)node->r)->op == OP_LAMBDA)) &&
-      (node->op != OP_APPLY || node->op != OP_APPLY_LAZY) &&
+      node->op != OP_APPLY && node->op != OP_APPLY_LAZY &&
       (node->l_type != NODE_NONE && node->r_type != NODE_NONE) &&
       node->op != OP_NONE) {
     return RESULT_LAMBDA;
@@ -306,17 +307,18 @@ sc_ResultType sc_synthesize_result_type(const sc_Node *node, sc_Context **ctx) {
     }
 
     if (node->op == OP_DIVISION) {
-      return sc_max(l, sc_max(r, RESULT_FLOAT));
+      return (sc_ResultType)sc_max((int)l, sc_max((int)r, RESULT_FLOAT));
     } else {
-      return sc_max(l, r);
+      return (sc_ResultType)sc_max((int)l, (int)r);
     }
   }
 
   if (node->op == OP_DIVISION) {
     // Special fucking case
-    return sc_node_type_to_result_type(sc_max(result_node_type, NODE_FLOAT));
+    return sc_node_type_to_result_type(
+        (sc_NodeType)sc_max((int)result_node_type, NODE_FLOAT));
   } else {
-    return sc_max(l, r);
+    return (sc_ResultType)sc_max((int)l, (int)r);
   }
 }
 
