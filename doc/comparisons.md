@@ -76,3 +76,7 @@ You can use the same pattern to write anything you want.
 | `<`      | `2 < 3`    |
 | `>=`     | `2 >= 1.5` |
 | `<=`     | `2 <= 2`   |
+
+## Next steps
+
+Now that basics are covered you may proceed to (strings operations)[strings.md]
